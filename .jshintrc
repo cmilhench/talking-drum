@@ -1,0 +1,17 @@
+{
+  "asi"     : false, // Tolerate Automatic Semicolon Insertion (no semicolons).
+  "loopfunc": false, // Allow functions to be defined within loops.
+
+  "indent"  : 2,     // Only allow 2 chars of indentation
+  "unused"  : true,
+  "laxcomma": true,  // true: Suppress warnings about comma-first coding style
+  "eqeqeq"  : true,  // true: Require triple equals (===) for comparison
+  "immed"   : true,  // true: Require immediate invocations to be wrapped in parens e.g. `(function () { } ());`
+  "latedef" : true,  // true: Require variables/functions to be defined before being used
+  "newcap"  : true,  // true: Require capitalization of all constructor functions e.g. `new F()`
+  "noarg"   : true,  // true: Prohibit use of `arguments.caller` and `arguments.callee`
+  "sub"     : true,  // true: Tolerate using `[]` notation when it can still be expressed in dot notation
+  "undef"   : true,  // true: Require all non-global variables to be declared (prevents global leaks)
+
+  "node"    : true  // Node.js
+}

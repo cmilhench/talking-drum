@@ -1,0 +1,41 @@
+{
+  "name": "talking-drum",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./index",
+  "author": {
+    "name": "Colin Milhench",
+    "email": "colin@milhen.ch",
+    "web": "http://milhen.ch",
+    "twitter": "cmilhench"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/cmilhench/talking-drum/raw/master/LICENSE"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cmilhench/talking-drum.git"
+  },
+  "readmeFilename": "Readme.md",
+  "bugs": {
+    "url": "https://github.com/cmilhench/talking-drum/issues"
+  },
+  "dependencies": {
+    "socket.io": "~0.9.16",
+    "connect": "~2.11.0",
+    "slate-irc": "~0.2.3",
+    "debug": "~0.7.3"
+  },
+  "devDependencies": {
+    "jshint": "~2.3.0",
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.7.1",
+    "grunt-contrib-watch": "~0.5.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
