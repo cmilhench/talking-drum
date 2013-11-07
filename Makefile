@@ -1,5 +1,5 @@
 dev:
-	DEBUG=http,socket nodemon index.js
+	grunt watch & DEBUG=http,object.io,slate-irc nodemon index.js
 	
 test:
 	./node_modules/jshint/bin/jshint *.js --config ./.jshintrc

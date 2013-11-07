@@ -19,24 +19,10 @@
   var model = {
     config: {
       host: { port: 6667, host: 'irc.freenode.org' },
-      nick: 'colinm3',
+      nick: 'colinm1',
       chan: ['#zarniwoop'],
       user: {  }
-    },
-    names: { '#test': ['blot','cmilhench','colinm'] },
-    messages: { '#test': [
-      {},
-      {},
-      {},
-      {},
-      {},
-      { from:'cmilhench', to:'#test', message:'Hey colinm, can you remember if the time tag is supported in chrome?', when: 1383753960000},
-      { from:'colinm', to:'#test', message:'I think it is, why not just give it a go?', when: 1383753990000},
-      { from:'cmilhench', to:'#test', message:'Arrrg! network issues', when: 1383754590000},
-      { from:'cmilhench', to:'#test', message:'seems to be working', when: 1383755115000},
-      { from:'cmilhench', to:'#test', message:'again now', when: 1383755130000},
-      { from:'colinm', to:'#test', message:'(y)', when:1383755145000}
-    ]}
+    }
   };
   
   var template = {
@@ -72,39 +58,48 @@
   }
     
   // -----------------------------------------------------------------
+  
+    var client = new window.Client();
+  
+  // -----------------------------------------------------------------
   //  listen to socket events
   var irc = window.io.connect('http://localhost:3000/irc');
   var socket = irc.on('connect', function () {
-    socket.on('message', function(data){
-      data.when = (+new Date());
-      if (!model.messages[data.to]) {
-        model.messages[data.to] = [data];
-      } else {
-        model.messages[data.to].push(data);
-      }
-      console.log('< ', data);
-      setTimeout(render, 1);
+    
+    var send = ['pass','nick','user','send','join','part'];
+    var down = ['message','names','topic','away','quit','join','part','kick','nick','data'];
+    
+    send.forEach(function(event){
+      client.on(event, socket.emit.bind(socket, event));
     });
-    socket.on('names', function(data){
-      data.when = (+new Date());
-      model.names[data.channel] = data.names;
-      console.log('< ', data);
+    down.forEach(function(event){
+      socket.on(event, client[event].bind(client));
     });
-    socket.on('data', function(data) {
-      console.log('< ', data.string);
-    });
-    socket.on('topic', function(data) {
-      console.log('< ', data.string);
-    });
+    
     socket.on('disconnect', function() {
-      socket.removeAllListeners('message');
-      socket.removeAllListeners('names');
-      socket.removeAllListeners('data');
+      send.forEach(function(event){
+        client.removeAllListeners(event);
+      });
+      down.forEach(function(event){
+        socket.removeAllListeners(event);
+      });
       form.find('.btn-primary').addClass('disabled');
     });
     
     if (model.config) {
-      socket.emit('open', model.config, function(){});
+      socket.emit('open', model.config, function(){
+        socket.emit('nick', model.config.nick, function(){
+          client.storage.nick = model.config.nick;
+          socket.emit('user', model.config.nick, model.config.nick, function(){
+            model.config.chan.forEach(function(channel){
+              socket.emit('join', channel, function(){
+                // sent everything and asked to join a channel
+                client.storage.channel = channel;
+              });
+            });
+          });
+        });  
+      });
     } else {
       form.find('.btn-primary').removeClass('disabled');
     }
@@ -166,12 +161,12 @@
   
   function clear() {
     while (panelBody.firstChild) panelBody.removeChild(panelBody.firstChild);
-    model.messages[model.config.chan[0]] = [];
+    client.storage.messages[model.config.chan[0]] = [];
   }
   
   function render(){
     var start = +new Date();
-    var messages = model.messages[model.config.chan[0]];
+    var messages = client.storage.messages[model.config.chan[0]];
     var rendered = panelBody.querySelectorAll('p').length;
     var fragment, lastFrom, last, lastTime, isodate, isotime;
     var flood = 50;
@@ -195,9 +190,13 @@
       }
     }
     resize();
-    // render more if there are any 
+    // render more if there are any, otherwise render again is a while
     // (i.e. the rendered count is lower than message count);
-    if (i < messages.length) { setTimeout(render, 1); }
+    if (i < messages.length) { 
+      setTimeout(render, 1); 
+    } else {
+      setTimeout(render, 1000); 
+    }
   }
   
   function typing(event) {
@@ -211,17 +210,7 @@
         when:(+new Date())
       };
       inputArea.value = '';
-      // TODO: parse for commands.
-      if (/\/clear/i.test(data.message)) { 
-        return clear();
-      }
-      if (!model.messages[data.to]) {
-        model.messages[data.to] = [data];
-      } else {
-        model.messages[data.to].push(data);
-      }
-      console.log('> ', data);
-      socket.emit('send', data);
+      client.parser.line(data.message);
       setTimeout(render, 1);
     }
   }
