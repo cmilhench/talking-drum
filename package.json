@@ -21,13 +21,16 @@
     "socket.io": "~0.9.16",
     "connect": "~2.11.0",
     "slate-irc": "~0.2.3",
-    "debug": "~0.7.3"
+    "debug": "~0.7.3",
+    "eventemitter": "~0.3.3"
   },
   "devDependencies": {
     "jshint": "~2.3.0",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.7.1",
-    "grunt-contrib-watch": "~0.5.3"
+    "grunt-contrib-watch": "~0.5.3",
+    "should": "~2.0.2",
+    "mocha": "~1.14.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
