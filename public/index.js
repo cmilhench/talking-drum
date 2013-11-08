@@ -20,13 +20,26 @@
     config: {
       host: { port: 6667, host: 'irc.freenode.org' },
       nick: 'colinm1',
-      chan: ['#zarniwoop'],
+      chan: ['#257'],
       user: {  }
     }
   };
   
   var template = {
-    part : '<p>%s</p>',
+    list: [    
+      '<div id="%s" class="panel panel-default">',
+      '  <!-- Default panel contents -->',
+      '  <div class="panel-heading">',
+      '    <strong>%s</strong>',
+      '    <span>&nbsp;&mdash;&nbsp;</span>',
+      '    <span title="%s">%s</span>',
+      '  </div>',
+      '  <ol class="panel-body list-group"></ol>',
+      '  <div class="panel-footer">',
+      '    <textarea></textarea>',
+      '  </div>',
+      '</div>'
+    ].map(function(line){ return line.replace(/^\s+|\s+$/g, ''); }).join(''),
     full : [
       '<li class="list-group-item">',
       '  <blockquote>',
@@ -37,7 +50,8 @@
       '    <p>%s</p>',
       '  </blockquote>',
       '</li>'
-    ].map(function(line){ return line.replace(/^\s+|\s+$/g, ''); }).join('')
+    ].map(function(line){ return line.replace(/^\s+|\s+$/g, ''); }).join(''),
+    part : '<p>%s</p>'
   };
     
   // -----------------------------------------------------------------
@@ -60,14 +74,15 @@
   // -----------------------------------------------------------------
   
     var client = new window.Client();
-  
+    window.client = client;
+    
   // -----------------------------------------------------------------
   //  listen to socket events
   var irc = window.io.connect('http://localhost:3000/irc');
   var socket = irc.on('connect', function () {
     
     var send = ['pass','nick','user','send','join','part'];
-    var down = ['message','names','topic','away','quit','join','part','kick','nick','data'];
+    var down = ['message','names','topic','join','part','nick','data'];
     
     send.forEach(function(event){
       client.on(event, socket.emit.bind(socket, event));
@@ -94,7 +109,6 @@
             model.config.chan.forEach(function(channel){
               socket.emit('join', channel, function(){
                 // sent everything and asked to join a channel
-                client.storage.channel = channel;
               });
             });
           });
@@ -110,15 +124,17 @@
   //  Globals
   
   var form      = $('.form-signin');
-  var panelMain = document.querySelector('.panel');
-  var panelBody = document.querySelector('.panel-body');
-  var panelFoot = document.querySelector('.panel-footer');
-  var inputArea = document.querySelector('textarea');
+  //var inputArea = document.querySelector('textarea');
   
   // -----------------------------------------------------------------
   //  Behaviours
   
   function resize(){
+    //TODO: support multiple
+    var panelMain = document.querySelector('.panel');
+    if (!panelMain) return;
+    var panelBody = document.querySelector('.panel-body');
+    var panelFoot = document.querySelector('.panel-footer');
     var panelStyle = window.getComputedStyle(panelMain);
     var marginTop = parseInt(panelStyle['margin-top'], 10);
     var marginBot = parseInt(panelStyle['margin-bottom'], 10);
@@ -159,58 +175,96 @@
     });
   }
   
-  function clear() {
-    while (panelBody.firstChild) panelBody.removeChild(panelBody.firstChild);
-    client.storage.messages[model.config.chan[0]] = [];
-  }
+  // function clear() {
+  //   while (panelBody.firstChild) panelBody.removeChild(panelBody.firstChild);
+  //   client.storage.messages[client.storage.channels[client.storage.channels.length-1]] = [];
+  // }
   
   function render(){
-    var start = +new Date();
-    var messages = client.storage.messages[model.config.chan[0]];
-    var rendered = panelBody.querySelectorAll('p').length;
-    var fragment, lastFrom, last, lastTime, isodate, isotime;
-    var flood = 50;
-    for (var i = rendered; i < messages.length; i++) {
-      // Process as many as we can before the flood, otherwise break
-      if (+new Date() - start >= flood) break;
-      last = panelBody.querySelector('li:last-child');
+    var i, channel, channels = client.storage.channels;
+    for (i = 0; channels && i < channels.length; i++) {
+      channel = client.storage.channels[i];
+      renderMessages(channel);
+    }
+    resize();
+    setTimeout(render, 1000); 
+  }
+  
+  function renderMessages(channel){
+    var i, message, messages = client.storage.messages[channel];
+    var topic = '';
+    var selector = '#channel'+channel.substring(1);
+    console.log(selector);
+    var container = document.querySelector(selector);
+    var fragment = document.createElement('div');
+    var last, lastFrom, lastTime, isodate, isotime;
+    if (!container) {
+      fragment.innerHTML = printf(template.list, selector.substring(1), channel, topic, topic);
+      container = fragment.firstChild;
+      document.querySelector('.container').appendChild(container);
+      container.querySelector('textarea').addEventListener('keyup', typing);
+    }
+    var list = container.querySelector('ol');
+    var rendered = list.querySelectorAll('p').length;
+    for (i = rendered; messages && i < messages.length; i++) {
+      message = messages[i];
+      isodate = (new Date(message.when)).toISOString();
+      isotime = isodate.substr(11,5);
+      last = list.querySelector('li:last-child');
       if (last) {
         lastFrom = last.querySelector('cite').innerText;
         lastTime = last.querySelector('time').innerText;
       }
-      isodate = (new Date(messages[i].when)).toISOString();
-      isotime = isodate.substr(11,5);
-      fragment = document.createElement('div');
       if (messages[i].from === lastFrom && isotime === lastTime) {
         fragment.innerHTML = printf(template.part, messages[i].message);
         last.querySelector('p:last-child').appendChild(fragment.firstChild);
       } else {
         fragment.innerHTML = printf(template.full, messages[i].from, isodate, isotime, messages[i].message);
-        panelBody.appendChild(fragment.firstChild);
+        list.appendChild(fragment.firstChild);
       }
-    }
-    resize();
-    // render more if there are any, otherwise render again is a while
-    // (i.e. the rendered count is lower than message count);
-    if (i < messages.length) { 
-      setTimeout(render, 1); 
-    } else {
-      setTimeout(render, 1000); 
     }
   }
   
+  // function Orender(){
+  //   var start = +new Date();
+  //   var messages = client.storage.messages[client.storage.channel];
+  //   var rendered = panelBody.querySelectorAll('p').length;
+  //   var i, fragment, lastFrom, last, lastTime, isodate, isotime;
+  //   var flood = 50;
+  //   for (i = rendered; messages && i < messages.length; i++) {
+  //     // Process as many as we can before the flood, otherwise break
+  //     if (+new Date() - start >= flood) break;
+  //     last = panelBody.querySelector('li:last-child');
+  //     if (last) {
+  //       lastFrom = last.querySelector('cite').innerText;
+  //       lastTime = last.querySelector('time').innerText;
+  //     }
+  //     isodate = (new Date(messages[i].when)).toISOString();
+  //     isotime = isodate.substr(11,5);
+  //     fragment = document.createElement('div');
+  //     if (messages[i].from === lastFrom && isotime === lastTime) {
+  //       fragment.innerHTML = printf(template.part, messages[i].message);
+  //       last.querySelector('p:last-child').appendChild(fragment.firstChild);
+  //     } else {
+  //       fragment.innerHTML = printf(template.full, messages[i].from, isodate, isotime, messages[i].message);
+  //       panelBody.appendChild(fragment.firstChild);
+  //     }
+  //   }
+  //   resize();
+  //   // render more if there are any, otherwise render again is a while
+  //   // (i.e. the rendered count is lower than message count);
+  //   if (messages && i < messages.length) { 
+  //     setTimeout(render, 1); 
+  //   } else {
+  //     setTimeout(render, 1000); 
+  //   }
+  // }
+  
   function typing(event) {
-    var data;
     if (event.which === 13 && !event.shiftKey) {
       event.preventDefault();
-      data = { 
-        from:model.config.nick, 
-        to:model.config.chan[0], 
-        message:inputArea.value, 
-        when:(+new Date())
-      };
-      inputArea.value = '';
-      client.parser.line(data.message);
+      client.parser.line(event.target.value);
+      event.target.value = '';
       setTimeout(render, 1);
     }
   }
@@ -218,9 +272,8 @@
   // -----------------------------------------------------------------
   //  Main
   
-  clear();
   window.addEventListener('resize', resize);
-  inputArea.addEventListener('keyup', typing);
+  //inputArea.addEventListener('keyup', typing);
   form.get(0).addEventListener('submit', submit);
   setTimeout(render, 1);
   
