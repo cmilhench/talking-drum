@@ -1,14 +1,9 @@
 {
   "name": "talking-drum",
   "version": "0.0.0",
-  "description": "",
+  "description": "Designed to be a minimalists take on an IRC client, heavily influenced by  application design such as iA Writer.",
   "main": "./index",
-  "author": {
-    "name": "Colin Milhench",
-    "email": "colin@milhen.ch",
-    "web": "http://milhen.ch",
-    "twitter": "cmilhench"
-  },
+  "author": "Colin Milhench <colin@milhen.ch> (http://milhen.ch)",
   "licenses": [
     {
       "type": "MIT",
@@ -19,7 +14,6 @@
     "type": "git",
     "url": "https://github.com/cmilhench/talking-drum.git"
   },
-  "readmeFilename": "Readme.md",
   "bugs": {
     "url": "https://github.com/cmilhench/talking-drum/issues"
   },
@@ -37,5 +31,6 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  },
+  "license": "MIT"
 }
