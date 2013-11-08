@@ -11,12 +11,12 @@
 /* jshint -W103 */
 
 (function(factory){
-  window.Parser = factory(window.Emitter);
-}(function(Emitter){
+  window.Parser = factory(window.EventEmitter);
+}(function(EventEmitter){
   
   function Parser() { }
   
-  Parser.prototype.__proto__ = Emitter.prototype;
+  Parser.prototype.__proto__ = EventEmitter.prototype;
   
   Parser.prototype.line = function(line){
     var i, 

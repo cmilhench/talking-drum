@@ -11,8 +11,8 @@
 /* jshint -W103, -W084 */
 
 (function(factory){
-  window.Client = factory(window.Emitter, window.Parser);
-}(function(Emitter, Parser){
+  window.Client = factory(window.EventEmitter, window.Parser);
+}(function(EventEmitter, Parser){
   
   Array.prototype.unique = function() {
     var a = this.concat();
@@ -85,7 +85,7 @@
     this.use(plugins.part);
   }
   
-  Client.prototype.__proto__ = Emitter.prototype;
+  Client.prototype.__proto__ = EventEmitter.prototype;
   
   Client.prototype.message = function(data, fn){
     data.when = (+new Date());
