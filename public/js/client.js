@@ -27,6 +27,18 @@
   };
   
   var plugins = {
+    message: function(client){
+      client.on('data', function(msg){
+        if ('' !== msg.command) return;
+        var e = {};
+        e.from = client.storage.nick;
+        //TODO: what channel
+        e.to = client.storage.channels[client.storage.channels.length-1];
+        e.message = msg.string;
+        client.emit('send', e.to, e.message);
+        client.message(e);
+      });
+    },
     privmsg: function(client){
       client.on('data', function(msg){
         if ('msg' !== msg.command) return;
@@ -36,6 +48,16 @@
         e.message = params.join(' ');
         client.emit('send', e.to, e.message);
         client.message(e);
+      });
+    },
+    names: function(client){
+      client.on('data', function(msg){
+        if ('names' !== msg.command) return;
+      });
+    },
+    topic: function(client){
+      client.on('data', function(msg){
+        if ('topic' !== msg.command) return;
       });
     },
     join: function(client){
@@ -58,18 +80,6 @@
         e.channels = msg.params || client.storage.channels[client.storage.channels.length-1];
         client.emit('part', e.channels);
         client.part(e);
-      });
-    },
-    message: function(client){
-      client.on('data', function(msg){
-        if ('' !== msg.command) return;
-        var e = {};
-        e.from = client.storage.nick;
-        //TODO: what channel
-        e.to = client.storage.channels[client.storage.channels.length-1];
-        e.message = msg.string;
-        client.emit('send', e.to, e.message);
-        client.message(e);
       });
     }
   };
