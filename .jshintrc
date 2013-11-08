@@ -13,5 +13,16 @@
   "sub"     : true,  // true: Tolerate using `[]` notation when it can still be expressed in dot notation
   "undef"   : true,  // true: Require all non-global variables to be declared (prevents global leaks)
 
-  "node"    : true  // Node.js
+  "node"    : true,  // Node.js
+  
+  "globals": {
+    /* MOCHA */
+    "describe"   : false,
+    "it"         : false,
+    "before"     : false,
+    "beforeEach" : false,
+    "after"      : false,
+    "afterEach"  : false
+  }
+      
 }

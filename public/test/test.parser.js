@@ -7,10 +7,13 @@
 //  Colin Milhench
 // 
 
+/* jshint -W117 */
+
+var Parser = window.Parser;
 
 describe('Parser', function(){
   it('should emit "message" events', function(done){
-    var parser = new window.Parser();
+    var parser = new Parser();
     var n = 0;
 
     parser.on('message', function(msg){
@@ -34,5 +37,5 @@ describe('Parser', function(){
     parser.line('/nick cmilhench\r\n');
     parser.line('Hello world\r\n');
     parser.line('/join #express\r\n');
-  })
-})
+  });
+});

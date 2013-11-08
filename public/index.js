@@ -98,7 +98,7 @@
       recv.forEach(function(event){
         socket.removeAllListeners(event);
       });
-      form.find('.btn-primary').addClass('disabled');
+      //form.find('.btn-primary').addClass('disabled');
     });
     
     if (model.config) {
@@ -115,7 +115,7 @@
         });  
       });
     } else {
-      form.find('.btn-primary').removeClass('disabled');
+      //form.find('.btn-primary').removeClass('disabled');
     }
 
   });
@@ -150,27 +150,27 @@
     }
   }
   
-  function submit(event) {
-    event.preventDefault();
-    var port = form.find('input[name="port"]').val() || 6667;
-    var host = form.find('input[name="host"]').val() || 'irc.freenode.org';
-    var nick = form.find('input[name="nick"]').val();
-    var name = form.find('input[name="name"]').val();
-    var pass = form.find('input[name="pass"]').val();
-    var chan = form.find('input[name="chan"]').val().split(',') || [];
-    
-    chan = chan.filter(function(element){ return element.replace(/^\s+|\s+$/g, ''); });
-    
-    model.config = {
-      host: { port: port, host: host },
-      nick: nick,
-      chan: chan,
-      user: { name: name, real: name, pass: pass }
-    };
-    socket.emit('open', model.config, function(){ 
-      form.hide();
-    });
-  }
+  // function submit(event) {
+  //   event.preventDefault();
+  //   var port = form.find('input[name="port"]').val() || 6667;
+  //   var host = form.find('input[name="host"]').val() || 'irc.freenode.org';
+  //   var nick = form.find('input[name="nick"]').val();
+  //   var name = form.find('input[name="name"]').val();
+  //   var pass = form.find('input[name="pass"]').val();
+  //   var chan = form.find('input[name="chan"]').val().split(',') || [];
+  //   
+  //   chan = chan.filter(function(element){ return element.replace(/^\s+|\s+$/g, ''); });
+  //   
+  //   model.config = {
+  //     host: { port: port, host: host },
+  //     nick: nick,
+  //     chan: chan,
+  //     user: { name: name, real: name, pass: pass }
+  //   };
+  //   socket.emit('open', model.config, function(){ 
+  //     form.hide();
+  //   });
+  // }
   
   function render(){
     var i, channel, channels = client.storage.channels;
