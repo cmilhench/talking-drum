@@ -64,7 +64,7 @@
       return this;
     }
     listeners = this._events[type];
-    while (listeners.length) {
+    while (listeners && listeners.length) {
       this.removeListener(type, listeners[listeners.length - 1]);
     }
   }; 
