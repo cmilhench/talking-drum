@@ -53,11 +53,22 @@
     names: function(client){
       client.on('data', function(msg){
         if ('names' !== msg.command) return;
+        var e = {};
+        e.nick = client.storage.nick;
+        e.channels = msg.params || client.storage.channels[client.storage.channels.length-1];
+        client.emit('names', e.channels);
+        client.names(e);
       });
     },
     topic: function(client){
       client.on('data', function(msg){
         if ('topic' !== msg.command) return;
+        var e = {};
+        e.nick = client.storage.nick;
+        e.channel = client.storage.channels[client.storage.channels.length-1];
+        e.topic = msg.params;
+        client.emit('topic', e.channel, e.topic);
+        client.topic(e);
       });
     },
     join: function(client){
@@ -86,13 +97,20 @@
 
   function Client() {
     var self = this;
-    this.storage = { nick:'', channels:[], topic: {}, messages: {}, names: {} };
+    this.storage = { nick: undefined, channels:[], topic: {}, messages: {}, names: {} };
     this.parser = new Parser();
     this.parser.on('message', self.emit.bind(self, 'data'));
-    this.use(plugins.privmsg);
     this.use(plugins.message);
+    this.use(plugins.privmsg);
+    this.use(plugins.names);
+    this.use(plugins.topic);
     this.use(plugins.join);
     this.use(plugins.part);
+    //this.use(plugins.nick);
+    //this.use(plugins.kick);
+    //this.use(plugins.away);
+    //this.use(plugins.quit);
+    //this.use(plugins.mode);
   }
   
   Client.prototype.__proto__ = EventEmitter.prototype;
@@ -107,7 +125,6 @@
     setTimeout(fn, 1);
   };
   
-  
   Client.prototype.names = function(data, fn){
     data.when = (+new Date());
     this.storage.names[data.channel] = data.names;
@@ -116,14 +133,12 @@
   
   Client.prototype.topic = function(data, fn){
     data.when = (+new Date());
-    console.log('TOPIC', data);
     this.storage.topic[data.channel] = data;
     setTimeout(fn, 1);
   };
   
   Client.prototype.join = function(data, fn){
     data.when = (+new Date());
-    console.log('JOIN', data);
     // TODO: if its another user update names store
     // If its you remove from 
     if (data.nick === this.storage.nick) {
@@ -135,7 +150,6 @@
   Client.prototype.part = function(data, fn){
     var channels, channel, i;
     data.when = (+new Date());
-    console.log('PART', data);
     // TODO: update names store
     // If its you remove from channels
     if (data.nick === this.storage.nick) {
@@ -150,23 +164,23 @@
     setTimeout(fn, 1);
   };
   
-  Client.prototype.nick = function(data, fn){
+  Client.prototype.welcome = function(data, fn){
     data.when = (+new Date());
-    console.log('NICK', data);
     this.storage.nick = data;
     setTimeout(fn, 1);
   };
 
-  // TODO: send away
-  // TODO: send kick
-  // TODO: send topic
   // TODO: send nick
+  // TODO: send kick
+  // TODO: send away
+  // TODO: send quit
+  // TODO: send mode
   
+  // TODO: recieve nick
+  // TODO: recieve kick
   // TODO: recieve away
   // TODO: recieve quit
-  // TODO: recieve kick
-  // TODO: recieve nick
-  //      ":cmilhench!~colin@host-12-27-147-89.as13285.net NICK :colinm"
+  
   // TODO: recieve mode
   //      ":ChanServ!ChanServ@services. MODE #257 +imo cmilhench"
   

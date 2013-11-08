@@ -62,7 +62,23 @@ describe('Client Events', function(){
   });
 
   describe('on /names [...]', function(){
-    it('should emit "names"');
+    it('should emit "names"', function(done){
+      var client = new Client();
+      var n = 0;
+      client.on('names', function(channels){
+        switch (n++) {
+          case 0:
+            channels.should.equal('#express,#node.js');
+            break;
+          case 1:
+            (channels === undefined).should.equal(true);
+            done();
+            break;
+        }
+      });
+      client.parser.line('/names #express,#node.js\r\n');
+      client.parser.line('/names\r\n');
+    });
     it('should call this.names()', function(done){
       var client, called = 0;
       Client.prototype.names = function(){ called++; };
@@ -78,7 +94,25 @@ describe('Client Events', function(){
   });
   
   describe('on /topic [...]', function(){
-    it('should emit "topic"');
+    it('should emit "topic"', function(done){
+      var client = new Client();
+      var n = 0;
+      client.on('topic', function(channel, topic){
+        switch (n++) {
+          case 0:
+            (channel === undefined).should.equal(true);
+            topic.should.equal('New topic');
+            break;
+          case 1:
+            (channel === undefined).should.equal(true);
+            topic.should.equal('');
+            done();
+            break;
+        }
+      });
+      client.parser.line('/topic New topic\r\n');
+      client.parser.line('/topic\r\n');
+    });
     it('should call this.topic()', function(done){
       var client, called = 0;
       Client.prototype.topic = function(){ called++; };

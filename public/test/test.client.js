@@ -13,6 +13,10 @@
 
 describe('Client Methods', function(){
 
+  describe('on welcome()', function(){
+    it('should update stored messages');
+  });
+  
   describe('on message()', function(){
     it('should update stored messages');
   });
@@ -47,6 +51,10 @@ describe('Client Methods', function(){
   
   describe('on quit()', function(){
     it('should update stored names');
+  });
+  
+  describe('on mode()', function(){
+    it('should update stored mode');
   });
   
 });
