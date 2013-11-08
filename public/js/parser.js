@@ -8,7 +8,7 @@
 // 
 
 /* jshint browser:true, jquery:true */
-/* jshint -W103 */
+/* jshint -W103, -W120 */
 
 (function(factory){
   window.Parser = factory(window.EventEmitter);
@@ -22,9 +22,7 @@
     var i, 
       command = '', 
       params = '', 
-      orig = line;
-    
-    line = line.replace(/^\s+|\s+$/g, '');
+      orig = line = line.replace(/^\s+|\s+$/g, '');
 
     if (line[0] === '/') {
       i = line.indexOf(' ');

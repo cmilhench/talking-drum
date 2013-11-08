@@ -55,7 +55,7 @@
         e.nick = client.storage.nick;
         e.message = '';
         //TODO: what channel
-        e.channels = msg.params || [client.storage.channels[client.storage.channels.length-1]];
+        e.channels = msg.params || client.storage.channels[client.storage.channels.length-1];
         client.emit('part', e.channels);
         client.part(e);
       });
@@ -123,13 +123,14 @@
   };
   
   Client.prototype.part = function(data, fn){
-    var channel, i;
+    var channels, channel, i;
     data.when = (+new Date());
     console.log('PART', data);
     // TODO: update names store
     // If its you remove from channels
     if (data.nick === this.storage.nick) {
-      while(channel = data.channels.pop()) {
+      channels = data.channels ? data.channels.split(',') : undefined;
+      while(channels && (channel = channels.pop())) {
         i = this.storage.channels.indexOf(channel);
         if (i > -1) {
           this.storage.channels = this.storage.channels.splice(i, 1);
