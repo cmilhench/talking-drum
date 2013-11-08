@@ -13,7 +13,6 @@
 var debug   = require('debug')('http'),
     connect = require('connect'),
     sockets = require('socket.io'),
-    objects = require('./lib/object.io'),
     http    = require('http'),
     irc     = require('slate-irc'),
     net     = require('net');
@@ -33,18 +32,29 @@ io.set('log level', 2);
 
 io.of('/irc').on('connection', function (socket) {
   
-  var events = ['message','names','topic','away','quit','join','part','kick','nick','data'];
-  var ignore = ['use','onmessage','write','quit'];
-  var functs = ['pass','nick','user','send','join','part'];
-  var client;
-  
   socket.on('open', function(config, fn){
-    client = irc(net.connect(config.host));
-    objects.expose(socket, events, functs, ignore, client, function(){
-      if (client) {
-        client.quit();
-      }
+    var client = irc(net.connect(config.host));
+    
+    var send = ['message','names','topic','join','part','nick','data'];
+    var recv = ['pass','nick','user','send','join','part'];
+  
+    send.forEach(function(event){
+      client.on(event, socket.emit.bind(socket, event));
     });
+    recv.forEach(function(method){
+      socket.on(method, client[method].bind(client));
+    });
+    
+    socket.on('disconnect', function() {
+      send.forEach(function(event){
+        client.removeAllListeners(event);
+      });
+      recv.forEach(function(method){
+        socket.removeAllListeners(method);
+      });
+      if (client) { client.quit(); }
+    });
+    
     if (fn) fn();
   });
   

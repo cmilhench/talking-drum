@@ -1,6 +1,6 @@
 {
   "name": "talking-drum",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Designed to be a minimalists take on an IRC client, heavily influenced by  application design such as iA Writer.",
   "main": "./index",
   "author": "Colin Milhench <colin@milhen.ch> (http://milhen.ch)",

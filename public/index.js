@@ -19,8 +19,8 @@
   var model = {
     config: {
       host: { port: 6667, host: 'irc.freenode.org' },
-      nick: 'colinm1',
-      chan: ['#257'],
+      nick: 'colinm-td',
+      chan: ['#talking-drum'],
       user: {  }
     }
   };
@@ -82,12 +82,12 @@
   var socket = irc.on('connect', function () {
     
     var send = ['pass','nick','user','send','join','part'];
-    var down = ['message','names','topic','join','part','nick','data'];
+    var recv = ['message','names','topic','join','part','nick','data'];
     
     send.forEach(function(event){
       client.on(event, socket.emit.bind(socket, event));
     });
-    down.forEach(function(event){
+    recv.forEach(function(event){
       socket.on(event, client[event].bind(client));
     });
     
@@ -95,7 +95,7 @@
       send.forEach(function(event){
         client.removeAllListeners(event);
       });
-      down.forEach(function(event){
+      recv.forEach(function(event){
         socket.removeAllListeners(event);
       });
       form.find('.btn-primary').addClass('disabled');
@@ -122,9 +122,6 @@
   
   // -----------------------------------------------------------------
   //  Globals
-  
-  var form      = $('.form-signin');
-  //var inputArea = document.querySelector('textarea');
   
   // -----------------------------------------------------------------
   //  Behaviours
@@ -175,11 +172,6 @@
     });
   }
   
-  // function clear() {
-  //   while (panelBody.firstChild) panelBody.removeChild(panelBody.firstChild);
-  //   client.storage.messages[client.storage.channels[client.storage.channels.length-1]] = [];
-  // }
-  
   function render(){
     var i, channel, channels = client.storage.channels;
     for (i = 0; channels && i < channels.length; i++) {
@@ -194,7 +186,6 @@
     var i, message, messages = client.storage.messages[channel];
     var topic = '';
     var selector = '#channel'+channel.substring(1);
-    console.log(selector);
     var container = document.querySelector(selector);
     var fragment = document.createElement('div');
     var last, lastFrom, lastTime, isodate, isotime;
@@ -225,41 +216,6 @@
     }
   }
   
-  // function Orender(){
-  //   var start = +new Date();
-  //   var messages = client.storage.messages[client.storage.channel];
-  //   var rendered = panelBody.querySelectorAll('p').length;
-  //   var i, fragment, lastFrom, last, lastTime, isodate, isotime;
-  //   var flood = 50;
-  //   for (i = rendered; messages && i < messages.length; i++) {
-  //     // Process as many as we can before the flood, otherwise break
-  //     if (+new Date() - start >= flood) break;
-  //     last = panelBody.querySelector('li:last-child');
-  //     if (last) {
-  //       lastFrom = last.querySelector('cite').innerText;
-  //       lastTime = last.querySelector('time').innerText;
-  //     }
-  //     isodate = (new Date(messages[i].when)).toISOString();
-  //     isotime = isodate.substr(11,5);
-  //     fragment = document.createElement('div');
-  //     if (messages[i].from === lastFrom && isotime === lastTime) {
-  //       fragment.innerHTML = printf(template.part, messages[i].message);
-  //       last.querySelector('p:last-child').appendChild(fragment.firstChild);
-  //     } else {
-  //       fragment.innerHTML = printf(template.full, messages[i].from, isodate, isotime, messages[i].message);
-  //       panelBody.appendChild(fragment.firstChild);
-  //     }
-  //   }
-  //   resize();
-  //   // render more if there are any, otherwise render again is a while
-  //   // (i.e. the rendered count is lower than message count);
-  //   if (messages && i < messages.length) { 
-  //     setTimeout(render, 1); 
-  //   } else {
-  //     setTimeout(render, 1000); 
-  //   }
-  // }
-  
   function typing(event) {
     if (event.which === 13 && !event.shiftKey) {
       event.preventDefault();
@@ -273,8 +229,6 @@
   //  Main
   
   window.addEventListener('resize', resize);
-  //inputArea.addEventListener('keyup', typing);
-  form.get(0).addEventListener('submit', submit);
   setTimeout(render, 1);
   
   return model;
