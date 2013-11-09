@@ -22,7 +22,8 @@
     "connect": "~2.11.0",
     "slate-irc": "slate/slate-irc",
     "debug": "~0.7.3",
-    "eventemitter": "~0.3.3"
+    "eventemitter": "~0.3.3",
+    "knockout": "~3.0.0"
   },
   "devDependencies": {
     "jshint": "~2.3.0",
