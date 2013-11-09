@@ -19,7 +19,7 @@
   var model = {
     config: {
       host: { port: 6667, host: 'irc.freenode.org' },
-      nick: 'colinm-td',
+      nick: 'colinm-td-',
       chan: ['#talking-drum'],
       user: {  }
     }
@@ -82,7 +82,7 @@
   var socket = irc.on('connect', function () {
     
     var send = ['pass','nick','user','send','join','part'];
-    var recv = ['message','names','topic','join','part',/*'nick',*/'data'];
+    var recv = ['message','names','topic','join','part','welcome','data','nick'];
     
     send.forEach(function(event){
       client.on(event, socket.emit.bind(socket, event));
@@ -104,7 +104,6 @@
     if (model.config) {
       socket.emit('open', model.config, function(){
         socket.emit('nick', model.config.nick, function(){
-          client.storage.nick = model.config.nick;
           socket.emit('user', model.config.nick, model.config.nick, function(){
             model.config.chan.forEach(function(channel){
               socket.emit('join', channel, function(){

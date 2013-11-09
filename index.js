@@ -35,7 +35,7 @@ io.of('/irc').on('connection', function (socket) {
   socket.on('open', function(config, fn){
     var client = irc(net.connect(config.host));
     
-    var send = ['message','names','topic','join','part','nick','data'];
+    var send = ['message','names','topic','join','part','welcome','data','nick'];
     var recv = ['pass','nick','user','send','join','part'];
   
     send.forEach(function(event){
