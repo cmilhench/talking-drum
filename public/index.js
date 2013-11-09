@@ -82,7 +82,7 @@
   var socket = irc.on('connect', function () {
     
     var send = ['pass','nick','user','send','join','part'];
-    var recv = ['message','names','topic','join','part','nick','data'];
+    var recv = ['message','names','topic','join','part',/*'nick',*/'data'];
     
     send.forEach(function(event){
       client.on(event, socket.emit.bind(socket, event));
