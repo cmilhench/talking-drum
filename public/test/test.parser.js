@@ -24,15 +24,20 @@ describe('Parser', function(){
           break;
         case 1:
           msg.command.should.equal('nick');
-          msg.params.should.equal('cmilhench');
+          msg.params.should.be.instanceof(Array).and.have.lengthOf(1);
+          msg.params.should.include('cmilhench');
           break;
         case 2:
           msg.command.should.equal('join');
-          msg.params.should.equal('#express');
+          msg.params.should.be.instanceof(Array).and.have.lengthOf(1);
+          msg.params.should.include('#express');
           break;
         case 3:
           msg.command.should.equal('msg');
-          msg.params.should.equal('colinm Hello there...');
+          msg.params.should.be.instanceof(Array).and.have.lengthOf(3);
+          msg.params.should.include('colinm');
+          msg.params.should.include('Hello');
+          msg.params.should.include('there...');
           done();
           break;
       }

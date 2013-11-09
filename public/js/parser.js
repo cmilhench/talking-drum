@@ -28,7 +28,7 @@
       i = line.indexOf(' ');
       if (i === -1) i = line.length;
       command = line.slice(1, i);
-      params = line.slice(i+1);
+      params = line.slice(i+1).split(' ');
     }
     
     var msg = {
