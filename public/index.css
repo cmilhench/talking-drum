@@ -5,6 +5,7 @@ body {
 	background-color: #f2f2f2;
 	color: #424242;
 	word-wrap: break-word;
+  margin:0;
 }
 
 hr { 
@@ -69,4 +70,6 @@ hr {
 	background-color: inherit;
 	color: inherit;
 }
-.panel-footer textarea:focus { outline: none; }
+.panel-footer textarea:focus { 
+  outline: none; 
+}
