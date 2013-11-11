@@ -33,7 +33,8 @@ io.set('log level', 2);
 io.of('/irc').on('connection', function (socket) {
   
   socket.on('open', function(config, fn){
-    var client = irc(net.connect(config.host));
+    var stream = net.connect(config.host);
+    var client = irc(stream);
     
     var send = ['message','names','topic','join','part','welcome','data','nick'];
     var recv = ['pass','nick','user','send','join','part'];
@@ -53,6 +54,10 @@ io.of('/irc').on('connection', function (socket) {
         socket.removeAllListeners(method);
       });
       if (client) { client.quit(); }
+    });
+    
+    stream.on('end', function(){
+      socket.disconnect();
     });
     
     if (fn) fn();
