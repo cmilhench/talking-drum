@@ -76,7 +76,6 @@
       to: model.name(),
       string: event.target.value
     };
-    console.log(msg);
     context.$root.emit('message', msg);
     event.target.value = '';
   };

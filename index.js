@@ -37,7 +37,7 @@ io.of('/irc').on('connection', function (socket) {
     var client = irc(stream);
     
     var send = ['message','names','topic','join','part','welcome','data','nick'];
-    var recv = ['pass','nick','user','send','join','part'];
+    var recv = ['pass','nick','user','send','join','part','names'];
   
     send.forEach(function(event){
       client.on(event, socket.emit.bind(socket, event));

@@ -76,7 +76,9 @@
         var e = {};
         e.nick = msg.from;
         e.channel = msg.params[0] || msg.to;
-        client.emit('names', e.channel);
+        client.emit('names', e.channel, function(err, data){
+          client.names({ channel:e.channel, names:data });
+        });
       });
     },
     // TODO: send list
