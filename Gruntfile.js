@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     jshint: {
       files: ['Gruntfile.js', 'index.js', 'lib/**/*.js', 'public/**/*.js'],
       options: {
-        ignores: ['./public/test/lib/*', './public/js/emitter.js', './public/js/knockout-latest.js'],
+        ignores: ['./public/test/lib/**', './public/vendor/**'],
         jshintrc: './.jshintrc'
       }
     },
@@ -18,4 +18,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   
   grunt.registerTask('default', ['jshint']);
+
 };

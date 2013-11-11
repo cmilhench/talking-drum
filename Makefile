@@ -2,7 +2,7 @@ dev:
 	grunt watch & DEBUG=http,object.io,slate-irc nodemon index.js
 	
 test:
-	./node_modules/jshint/bin/jshint **/*.js --config ./.jshintrc --exclude ./public/test/lib/*.js
+	./node_modules/jshint/bin/jshint **/*.js --config ./.jshintrc --exclude ./public/test/lib/**/*
 
 clean:
 	rm -fr build
