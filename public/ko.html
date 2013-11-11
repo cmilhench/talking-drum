@@ -8,24 +8,29 @@
 </head>
 <body>
   <div class="container">
-    <!-- if: channels().length == 0 -->
-        Please wait for connection <!-- ko text: nick --><!-- /ko -->...
-    <!-- /ko -->
-    <!-- ko if: channels().length != 0 -->
-    <!-- ko foreach: channels() -->
-    <div data-bind="attr: { id: name() }" class="panel panel-default">
-      <div class="panel-heading">
-        <strong data-bind="text: name()"></strong>
-        <span>&nbsp;&mdash;&nbsp;</span>
-        <span data-bind="text: topic, attr: { title: topic }"></span>
-      </div>
-      <ol class="panel-body list-group" data-bind="foreach: { data: messages, as: 'message' }"></ol>
-      <div class="panel-footer">
-        <textarea></textarea>
+    <div data-bind="foreach: channels">
+      <div id="%s" class="panel panel-default">
+          <div class="panel-heading">
+            <strong data-bind="text: name">%name</strong>
+            <span>&nbsp;&mdash;&nbsp;</span>
+            <span title="%topic" data-bind="text: topic, attr: { title: topic }">%topic</span>
+            <textarea data-bind="submit: message, event: { keypress: $root.sendMessage }"></textarea>
+          </div>
+          <ol class="panel-body list-group" data-bind="foreach: messages">
+            <li>
+              <blockquote>
+                <header>
+                  <cite class="author" data-bind="text: from">%from</cite>&nbsp;
+                  <time title="%date" data-bind="text: time, attr: { title: date }">%time</time>
+                </header>
+                <p data-bind="text: text"></p>
+              </blockquote>
+            </li>
+          </ol>
+          <div class="panel-footer">
+          </div>
       </div>
     </div>
-    <!-- /ko -->
-    <!-- /ko -->
   </div>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.3.min.js"><\/script>')</script>
@@ -35,48 +40,84 @@
   <script src="/js/parser.js"></script>
   <script src="/js/client.js"></script>
   <script>
-  // -----------------------------------------------------------------
-  //  index.js
-  //  
-  //  irc.milhen.ch
-  //  Copyright 2013. Colin Milhench. All rights reserved.
-  //  
-  //  Colin Milhench
-  // 
-
-  /* jshint browser:true, jquery:true */
-  /* jshint -W015 */
-
-  (function(factory){
-    'use strict';
-    factory();
-  }(function(){
-    'use strict';
-
-    function ViewModel() {
-      this.parser = new Parser();
-      this.nick = ko.observable('Bob');
-      this.selected = ko.observable();
-      this.channels = ko.observableArray();
   
+    function MessageViewModel(from, text, when) {
+      var self = this;
+      self.from = ko.observable(from);
+      self.text = ko.observable(text);
+      self.when = ko.observable(when);
+      self.date = ko.computed(function(){
+        return new Date(self.when()).toISOString();
+      });
+      self.time = ko.computed(function(){
+        return self.date().substr(11,5);
+      });
     }
-  
-    function Channel(name){
-      this.name = ko.observable(name);
-      this.topic = ko.observable();
-      this.names = ko.observableArray();
-      this.messages = ko.observableArray();
+
+    function ChannelViewModel(name, topic, names) {
+      var self = this;
+      self.name = ko.observable(name);
+      self.topic = ko.observable(topic);
+      self.names = ko.observableArray(names);
+      self.messages = ko.observableArray([]);
     }
+
+    function MainViewModel() {
+      this.me = ko.observable();
+      this.channels = ko.observableArray([]);
+    }
+    MainViewModel.prototype.addChannel = function(name){
+      this.channels.push(new ChannelViewModel(name));
+    }
+    MainViewModel.prototype.addMessage = function(message){
+      var self = this;
+      var channel = self.channels().filter(function(channel){ 
+        return channel.name() === message.to; 
+      })[0];
+      if (!channel) {
+        self.addChannel(message.to)
+        return self.addMessage(message);
+      }
+      channel.messages.push(new MessageViewModel(message.from, message.message, message.when));
+    }
+    MainViewModel.prototype.sendMessage = function(model, event){
+      var self = this;
+      if (event.which !== 13) {
+          return true;
+      }
+      var context = ko.contextFor(event.target);
+      var send = {
+        from: context.$root.me(),
+        to: model.name(),
+        message: event.target.value,
+        when: (+new Date())
+      }
+      console.log(send);
+      event.target.value = '';
+    }
+
     
-    // -----------------------------------------------------------------
-    //  Main
-    var vm = new ViewModel()
+    var vm = new MainViewModel();
     ko.applyBindings(vm);
     
-    vm.channels.push({});
-    window.vm = vm;
-  
-  }));
+    var repo = [
+      { to:'#talking-drum', from: 'cmilhench', message: 'Hello', when:1384157989787},
+      { to:'#talking-drum', from: 'colinm', message: 'Hello', when:1384157990787},
+      { to:'#talking-drum', from: 'colinm', message: 'How\'s it going?', when:1384157999787},
+      { to:'#talking-drum', from: 'colinm', message: 'Long time no see', when:1384158100787},
+      { to:'#talking-drum', from: 'cmilhench', message: 'Yeah, good', when:1384158110787},
+      { to:'#talking-drum', from: 'colinm', message: 'how\'s the irc client coming?', when:1384158120787},
+      { to:'#talking-drum', from: 'cmilhench', message: 'Awesome', when:1384158130787}
+    ];
+    function message(){
+      var m = repo.shift();
+      vm.addMessage(m);
+      if (repo.length) {
+        setTimeout(message, 1000);
+      }
+    }
+    setTimeout(message, 10);
+
   </script>
 </body>
 </html>
