@@ -7,11 +7,37 @@
   <link href='index.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
-  <div class="container"></div>
+  <div class="container" data--bind="style: {'width': (channels().length * 401) + 'px'}">
+    <div data-bind="foreach: channels">
+      <div id="%s" class="panel panel-default" style="width:400px;border-right:1px solid #B8B8B8; float:left">
+          <div class="panel-heading">
+            <strong data-bind="text: name">%name</strong>
+            <span>&nbsp;&mdash;&nbsp;</span>
+            <span title="%topic" data-bind="text: topic, attr: { title: topic }">%topic</span>
+          </div>
+          <ol class="panel-body list-group" data-bind="foreach: messages, contract: messages, scrollBottom: messages">
+            <li>
+              <blockquote>
+                <header>
+                  <cite class="author" data-bind="text: from">%from</cite>&nbsp;
+                  <time title="%date" data-bind="text: time, attr: { title: date }">%time</time>
+                </header>
+                <p data-bind="text: text"></p>
+              </blockquote>
+            </li>
+          </ol>
+          <div class="panel-footer" data-bind="expand: messages">
+            <textarea data-bind="event: { keypress: $root.sendMessage }"></textarea>
+          </div>
+      </div>
+    </div>
+  </div>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.3.min.js"><\/script>')</script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/vendor/eventemitter/emitter.js"></script>
+  <script src="/socket.io/socket.io.js"></script> 
+  <script src="/vendor/knockout/knockout-latest.js"></script>
+  <script src="/vendor/eventemitter/index.js"></script>
+  <script src="/js/view.js"></script>
   <script src="/js/parser.js"></script>
   <script src="/js/client.js"></script>
   <script src="/index.js"></script>

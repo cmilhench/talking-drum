@@ -7,7 +7,7 @@
 //  Colin Milhench
 // 
 
-/* jshint browser:true, jquery:true */
+/* jshint browser:true */
 /* jshint -W103, -W084 */
 
 (function(factory){
@@ -31,7 +31,7 @@
       client.on('data', function(msg){
         if ('nick' !== msg.command) return;
         var e = {};
-        e.nick = client.me;
+        e.nick = msg.from;
         e.new = msg.params[0];
         client.emit('nick', e.new);
       });
@@ -42,22 +42,20 @@
       client.on('data', function(msg){
         if ('join' !== msg.command) return;
         var e = {};
-        e.nick = client.me;
+        e.nick = msg.from;
         e.channels = msg.params[0];
         e.keys = msg.params[1];
         client.emit('join', e.channels, e.keys);
-        client.join(e);
       });
     },
     part: function(client){
       client.on('data', function(msg){
         if ('part' !== msg.command) return;
         var e = {};
-        e.nick = client.me;
-        e.channels = msg.params[0] || client.storage.channels[client.storage.channels.length-1];
-        e.message = msg.params.join(' ');
+        e.nick = msg.from;
+        e.channels = msg.params[0] || msg.to;
+        e.message = msg.params.slice(1).join(' ');
         client.emit('part', e.channels, e.message);
-        client.part(e);
       });
     },
     // TODO: send mode
@@ -66,21 +64,19 @@
       client.on('data', function(msg){
         if ('topic' !== msg.command) return;
         var e = {};
-        e.nick = client.me;
-        e.channel = client.storage.channels[client.storage.channels.length-1];
+        e.nick = msg.from;
+        e.channel = msg.to;
         e.topic = msg.params.join(' ');
         client.emit('topic', e.channel, e.topic);
-        client.topic(e);
       });
     },
     names: function(client){
       client.on('data', function(msg){
         if ('names' !== msg.command) return;
         var e = {};
-        e.nick = client.me;
-        e.channels = msg.params[0] || client.storage.channels[client.storage.channels.length-1];
-        client.emit('names', e.channels);
-        client.names(e);
+        e.nick = msg.from;
+        e.channel = msg.params[0] || msg.to;
+        client.emit('names', e.channel);
       });
     },
     // TODO: send list
@@ -93,9 +89,8 @@
       client.on('data', function(msg){
         if ('' !== msg.command) return;
         var e = {};
-        e.from = client.storage.me;
-        //TODO: what channel
-        e.to = client.storage.channels[client.storage.channels.length-1];
+        e.from = msg.from;
+        e.to = msg.to;
         e.message = msg.string;
         client.emit('send', e.to, e.message);
         client.message(e);
@@ -105,7 +100,7 @@
       client.on('data', function(msg){
         if ('msg' !== msg.command) return;
         var e = {};
-        e.from = client.me;
+        e.from = msg.from;
         e.to = msg.params.shift();
         e.message = msg.params.join(' ');
         client.emit('send', e.to, e.message);
@@ -124,16 +119,12 @@
     away: function(){}
   };
 
-  function Client() {
-    this.storage = { 
-      me: undefined,  // current nick
-      channels:[],    // current channels open
-      topics: {},     // By channel, topics of channels
-      messages: {},   // By channel, messages in channel
-      names: {}       // By channel, handles in channel 
-    };
+  function Client(model) {
+    if (!(this instanceof Client)) return new Client(model);
+    this.model = model;
     this.parser = new Parser();
     this.parser.on('message', this.emit.bind(this, 'data'));
+    if (model) this.model.on('message', this.parser.line.bind(this.parser));
     this.use(plugins.nick);
     //this.use(plugins.quit);
     this.use(plugins.join);
@@ -158,44 +149,38 @@
   // TODO: Handle identify
   
   Client.prototype.welcome = function(data, fn){
-    data.when = (+new Date());
-    this.storage.me = data;
+    this.model.me(data);
     setTimeout(fn, 1);
   };
   
   Client.prototype.nick = function(data, fn){
-    console.log(data);
-    if (data.nick === this.storage.me) {
-      this.storage.me = data.new;
+    if (data.nick === this.model.me()) {
+      this.model.me(data.new);
     }
-    //TODO: update stored names
     setTimeout(fn, 1);
   };
   // TODO: recieve quit
   
   Client.prototype.join = function(data, fn){
-    data.when = (+new Date());
-    // TODO: if its another user update names store
-    // If its you update channels list 
-    if (data.nick === this.storage.me) {
-      this.storage.channels = this.storage.channels.concat(data.channels).unique();
+    var channel;
+    if (data.nick === this.model.me()) {
+      while(data.channels && (channel = data.channels.pop())) {
+        this.model.addChannel(channel);
+      }
+    } else {
+      // TODO: update channel names
     }
     setTimeout(fn, 1);
   };
   
   Client.prototype.part = function(data, fn){
-    var channels, channel, i;
-    data.when = (+new Date());
-    // TODO: update names store
-    // If its you remove from channels
-    if (data.nick === this.storage.me) {
-      channels = data.channels ? data.channels.split(',') : undefined;
-      while(channels && (channel = channels.pop())) {
-        i = this.storage.channels.indexOf(channel);
-        if (i > -1) {
-          this.storage.channels = this.storage.channels.splice(i, 1);
-        }
+    var channel;
+    if (data.nick === this.model.me()) {
+      while(data.channels && (channel = data.channels.pop())) {
+        this.model.remChannel(channel);
       }
+    } else {
+      // TODO: update channel names
     }
     setTimeout(fn, 1);
   };
@@ -204,14 +189,12 @@
   //      ":ChanServ!ChanServ@services. MODE #257 +imo cmilhench"
   
   Client.prototype.topic = function(data, fn){
-    data.when = (+new Date());
-    this.storage.topics[data.channel] = data;
+    this.model.getChannel(data.channel).topic(data.topic);
     setTimeout(fn, 1);
   };
   
   Client.prototype.names = function(data, fn){
-    data.when = (+new Date());
-    this.storage.names[data.channel] = data.names;
+    // TODO: update channel names
     setTimeout(fn, 1);
   };
   
@@ -221,11 +204,12 @@
   
   Client.prototype.message = function(data, fn){
     data.when = (+new Date());
-    if (!this.storage.messages[data.to]) {
-      this.storage.messages[data.to] = [data];
-    } else {
-      this.storage.messages[data.to].push(data);
+    // if this is a direct message create a channel between `me` and the *sender*
+    // so that it to appear in the correct place in the ui
+    if (data.to === this.model.me()){
+      data.to = data.from;
     }
+    this.model.addMessage(data);
     setTimeout(fn, 1);
   };
 

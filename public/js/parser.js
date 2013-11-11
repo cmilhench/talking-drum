@@ -7,7 +7,7 @@
 //  Colin Milhench
 // 
 
-/* jshint browser:true, jquery:true */
+/* jshint browser:true */
 /* jshint -W103, -W120 */
 
 (function(factory){
@@ -18,11 +18,11 @@
   
   Parser.prototype.__proto__ = EventEmitter.prototype;
   
-  Parser.prototype.line = function(line){
+  Parser.prototype.line = function(event){
     var i, 
       command = '', 
       params = '', 
-      orig = line = line.replace(/^\s+|\s+$/g, '');
+      line = event.string.replace(/^\s+|\s+$/g, '');
 
     if (line[0] === '/') {
       i = line.indexOf(' ');
@@ -31,12 +31,10 @@
       params = line.slice(i+1).split(' ');
     }
     
-    var msg = {
-      command: command,
-      params: params || '',
-      string: orig
-    };
-    this.emit('message', msg);
+    event.command = command;
+    event.params = params || '';
+    
+    this.emit('message', event);
   };
   
   return Parser;
