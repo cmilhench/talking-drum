@@ -71,7 +71,7 @@ window.ko.applyBindings(vm);
 var irc = window.io.connect('http://localhost:3000/irc');
 var socket = irc.on('connect', function () {
   
-  var send = ['pass','nick','user','send','join','part','names'];
+  var send = ['pass','nick','user','send','join','part','names','topic'];
   var recv = ['message','names','topic','join','part','welcome','data','nick'];
   
   send.forEach(function(event){

@@ -32,12 +32,16 @@ io.set('log level', 2);
 
 io.of('/irc').on('connection', function (socket) {
   
+  irc.prototype.topic = function(channel, topic, fn){
+    this.write('TOPIC ' + channel + ' :' + topic, fn);
+  };
+  
   socket.on('open', function(config, fn){
     var stream = net.connect(config.host);
     var client = irc(stream);
     
     var send = ['message','names','topic','join','part','welcome','data','nick'];
-    var recv = ['pass','nick','user','send','join','part','names'];
+    var recv = ['pass','nick','user','send','join','part','names','topic'];
   
     send.forEach(function(event){
       client.on(event, socket.emit.bind(socket, event));
