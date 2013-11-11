@@ -32,10 +32,6 @@ io.set('log level', 2);
 
 io.of('/irc').on('connection', function (socket) {
   
-  irc.prototype.topic = function(channel, topic, fn){
-    this.write('TOPIC ' + channel + ' :' + topic, fn);
-  };
-  
   socket.on('open', function(config, fn){
     var stream = net.connect(config.host);
     var client = irc(stream);
