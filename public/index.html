@@ -8,6 +8,10 @@
 </head>
 <body>
   <div class="container" data--bind="style: {'width': (channels().length * 401) + 'px'}">
+    <!-- ko if: channels().length <= 0 -->
+    <p>Loading...</p>
+    <!-- /ko -->
+    <!-- ko if: channels().length > 0 -->
     <div data-bind="foreach: channels">
       <div id="%s" class="panel panel-default" style="width:400px;border-right:1px solid #B8B8B8; float:left">
           <div class="panel-heading">
@@ -31,6 +35,7 @@
           </div>
       </div>
     </div>
+  <!-- /ko -->
   </div>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.3.min.js"><\/script>')</script>
