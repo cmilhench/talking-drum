@@ -53,7 +53,10 @@ io.of('/irc').on('connection', function (socket) {
       recv.forEach(function(method){
         socket.removeAllListeners(method);
       });
-      if (client) { client.quit(); }
+      try {
+        if (client) { client.quit(); }
+      }
+      finally{}
     });
     
     stream.on('end', function(){
