@@ -118,7 +118,15 @@
     // TODO: send whowas
     whowas: function(){},
     // TODO: send away
-    away: function(){}
+    away: function(client){
+      client.on('data', function(msg){
+        if ('away' !== msg.command) return;
+        var e = {};
+        e.nick = msg.from;
+        e.message = msg.params.join(' ');
+        client.emit('away', e.message);
+      });
+    }
   };
 
   function Client(model) {
@@ -219,7 +227,17 @@
   // TODO: recieve who
   // TODO: recieve whois
   // TODO: recieve whowas
-  // TODO: recieve away
+  Client.prototype.away = function(data, fn){
+    // Away messages are currently not printed to the screen
+    // var message = { 
+    //   to: data.nick, 
+    //   from : 'auto response from ' + data.nick, 
+    //   message: data.message, 
+    //   when: (+new Date())
+    // };
+    // this.model.addMessage(message);
+    setTimeout(fn, 1);
+  };
 
   // TODO: recieve mode
   

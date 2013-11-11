@@ -40,9 +40,11 @@ io.of('/irc').on('connection', function (socket) {
     var stream = net.connect(config.host);
     var client = irc(stream);
     
-    var send = ['message','names','topic','join','part','welcome','data','nick'];
+    var send = ['message','names','topic','join','part','welcome','data','nick','away'];
     var recv = ['pass','nick','user','send','join','part','names','topic'];
   
+    client.use(require('./lib/plugins/away')());
+    
     send.forEach(function(event){
       client.on(event, socket.emit.bind(socket, event));
     });

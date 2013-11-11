@@ -72,7 +72,7 @@ var irc = window.io.connect('http://localhost:3000/irc');
 var socket = irc.on('connect', function () {
   
   var send = ['pass','nick','user','send','join','part','names','topic'];
-  var recv = ['message','names','topic','join','part','welcome','data','nick'];
+  var recv = ['message','names','topic','join','part','welcome','data','nick','away'];
   
   send.forEach(function(event){
     client.on(event, socket.emit.bind(socket, event));
