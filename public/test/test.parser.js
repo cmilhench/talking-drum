@@ -20,7 +20,7 @@ describe('Parser', function(){
       switch (n++) {
         case 0:
           msg.command.should.equal('');
-          msg.string.should.equal('Hello world');
+          msg.string.should.equal('Hello world\r\n');
           break;
         case 1:
           msg.command.should.equal('nick');
@@ -43,9 +43,9 @@ describe('Parser', function(){
       }
     });
 
-    parser.line('Hello world\r\n');
-    parser.line('/nick cmilhench\r\n');
-    parser.line('/join #express\r\n');
-    parser.line('/msg colinm Hello there...\r\n');
+    parser.line({ string:'Hello world\r\n'});
+    parser.line({ string:'/nick cmilhench\r\n'});
+    parser.line({ string:'/join #express\r\n'});
+    parser.line({ string:'/msg colinm Hello there...\r\n'});
   });
 });

@@ -25,14 +25,13 @@ describe('Client Events', function(){
           done(); 
         }, 10);
       });
-      client.parser.line('/nick colinm\r\n');
+      client.parser.line({string:'/nick colinm\r\n'});
     });
     it('should call this.nick()');
   });
   
   describe('on /quit [...]', function(){
     it('should emit "quit"');
-    it('should call this.quit()');
   });
   
   describe('on /join [...]', function(){
@@ -50,20 +49,8 @@ describe('Client Events', function(){
             break;
         }
       });
-      client.parser.line('/join #express,#node.js\r\n');
-      client.parser.line('/join #express\r\n');
-    });
-    it('should call this.join()', function(done){
-      var client, called = 0;
-      Client.prototype.join = function(){ called++; };
-      client = new Client();
-      client.on('join', function(){
-        setTimeout(function () {
-          called.should.equal(1);
-          done(); 
-        }, 10);
-      });
-      client.parser.line('/join #express\r\n');
+      client.parser.line({string:'/join #express,#node.js\r\n'});
+      client.parser.line({string:'/join #express\r\n'});
     });
   });
   
@@ -85,27 +72,14 @@ describe('Client Events', function(){
             break;
         }
       });
-      client.parser.line('/part #express,#node.js\r\n');
-      client.parser.line('/part #express\r\n');
-      client.parser.line('/part\r\n');
-    });
-    it('should call this.part()', function(done){
-      var client, called = 0;
-      Client.prototype.part = function(){ called++; };
-      client = new Client();
-      client.on('part', function(){
-        setTimeout(function () {
-          called.should.equal(1);
-          done(); 
-        }, 10);
-      });
-      client.parser.line('/part #express\r\n');
+      client.parser.line({string:'/part #express,#node.js\r\n'});
+      client.parser.line({string:'/part #express\r\n'});
+      client.parser.line({string:'/part\r\n'});
     });
   });
   
   describe('on /mode [...]', function(){
     it('should emit "mode"');
-    it('should call this.mode()');
   });
   
   describe('on /topic [...]', function(){
@@ -125,20 +99,8 @@ describe('Client Events', function(){
             break;
         }
       });
-      client.parser.line('/topic New topic\r\n');
-      client.parser.line('/topic\r\n');
-    });
-    it('should call this.topic()', function(done){
-      var client, called = 0;
-      Client.prototype.topic = function(){ called++; };
-      client = new Client();
-      client.on('topic', function(){
-        setTimeout(function () {
-          called.should.equal(1);
-          done(); 
-        }, 10);
-      });
-      client.parser.line('/topic Minimalist design\r\n');
+      client.parser.line({string:'/topic New topic\r\n'});
+      client.parser.line({string:'/topic\r\n'});
     });
   });
 
@@ -157,31 +119,17 @@ describe('Client Events', function(){
             break;
         }
       });
-      client.parser.line('/names #express,#node.js\r\n');
-      client.parser.line('/names\r\n');
-    });
-    it('should call this.names()', function(done){
-      var client, called = 0;
-      Client.prototype.names = function(){ called++; };
-      client = new Client();
-      client.on('names', function(){
-        setTimeout(function () {
-          called.should.equal(1);
-          done(); 
-        }, 10);
-      });
-      client.parser.line('/names\r\n');
+      client.parser.line({string:'/names #express,#node.js\r\n'});
+      client.parser.line({string:'/names\r\n'});
     });
   });
   
   describe('on /list [...]', function(){
     it('should emit "list"');
-    it('should call this.list()');
   });
   
   describe('on /invite [...]', function(){
     it('should emit "invite"');
-    it('should call this.invite()');
   });
   
   describe('on /kick [...]', function(){
@@ -196,9 +144,8 @@ describe('Client Events', function(){
           done(); 
         }, 10);
       });
-      client.parser.line('/kick colinm\r\n');
+      client.parser.line({string:'/kick colinm\r\n'});
     });
-    it('should call this.kick()');
   });
 
   
@@ -210,7 +157,7 @@ describe('Client Events', function(){
         message.should.equal('Hello there...');
         done();
       });
-      client.parser.line('Hello there...\r\n');
+      client.parser.line({string:'Hello there...'});
     });
     it('should call this.message()', function(done){
       var client, called = 0;
@@ -222,7 +169,7 @@ describe('Client Events', function(){
           done(); 
         }, 10);
       });
-      client.parser.line('Hello there...\r\n');
+      client.parser.line({string:'Hello there...\r\n'});
     });
   });
   
@@ -234,7 +181,7 @@ describe('Client Events', function(){
         message.should.equal('Hello there...');
         done();
       });
-      client.parser.line('/msg cmilhench Hello there...\r\n');
+      client.parser.line({string:'/msg cmilhench Hello there...'});
     });
     it('should call this.message()', function(done){
       var client, called = 0;
@@ -246,28 +193,24 @@ describe('Client Events', function(){
           done(); 
         }, 10);
       });
-      client.parser.line('/msg cmilhench Hello there...\r\n');
+      client.parser.line({string:'/msg cmilhench Hello there...\r\n'});
     });
   });
   
   describe('on /motd [...]', function(){
     it('should emit "motd"');
-    it('should call this.motd()');
   });
   
   describe('on /who [...]', function(){
     it('should emit "who"');
-    it('should call this.who()');
   });
   
   describe('on /whois [...]', function(){
     it('should emit "whois"');
-    it('should call this.whois()');
   });
   
   describe('on /whowas [...]', function(){
     it('should emit "whowas"');
-    it('should call this.whowas()');
   });
   
   describe('on /away [...]', function(){
@@ -282,7 +225,7 @@ describe('Client Events', function(){
           done(); 
         }, 10);
       });
-      client.parser.line('/away out to lunch\r\n');
+      client.parser.line({string:'/away out to lunch\r\n'});
     });
   });
   
