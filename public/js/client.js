@@ -175,7 +175,9 @@
     var channel;
     if (data.nick === this.model.me()) {
       while(data.channels && (channel = data.channels.pop())) {
-        this.model.addChannel(channel);
+        if (!this.model.getChannel(channel)) {
+          this.model.addChannel(channel);
+        }
       }
     } else {
       // TODO: update channel names
