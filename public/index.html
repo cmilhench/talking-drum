@@ -8,10 +8,30 @@
 </head>
 <body>
   <div class="container" data--bind="style: {'width': (channels().length * 401) + 'px'}">
-    <!-- ko if: channels().length <= 0 -->
-    <p>Loading...</p>
+    <!-- ko if: viewState() === 'disconnected' -->
+    <form class="form-signin">
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+          <input type="text" class="form-control" name="nick" placeholder="Nickname" data-bind="value: me" required autofocus>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon"><span class="glyphicon glyphicon-send"></span></span>
+          <input type="text" class="form-control" name="chan" placeholder="#Node.js" data-bind="value: join" required>
+        </div>
+      </div>
+      <button type="button" class="btn btn-lg btn-primary btn-block" data-bind="event: { click: $root.connect }">Connect</button>
+    </form>
     <!-- /ko -->
-    <!-- ko if: channels().length > 0 -->
+    <!-- ko if: viewState() === 'connecting' -->
+    <p>Connecting, please wait...</p>
+    <!-- /ko -->
+    <!-- ko if: viewState() === 'connected' && channels().length === 0 -->
+    <p>Please join a channel...</p>
+    <!-- /ko -->
+    <!-- ko if: viewState() === 'connected' && channels().length > 0 -->
     <div data-bind="foreach: channels">
       <div id="%s" class="panel panel-default" style="width:400px;border-right:1px solid #B8B8B8; float:left">
           <div class="panel-heading">

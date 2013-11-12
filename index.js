@@ -32,8 +32,8 @@ io.set('log level', 2);
 
 io.of('/irc').on('connection', function (socket) {
   
-  socket.on('open', function(config, fn){
-    var stream = net.connect(config.host);
+  socket.on('open', function(server, fn){
+    var stream = net.connect(server);
     var client = irc(stream);
     
     var send = ['message','names','topic','join','part','welcome','data','nick','away'];

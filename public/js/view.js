@@ -36,7 +36,12 @@
   }
 
   function MainViewModel() {
-    this.me = ko.observable('colinm');
+    this.server = { host: 'irc.freenode.org', port: 6667 };
+    this.viewStates = ['disconnected', 'connecting', 'connected'];
+    this.viewState = ko.observable(this.viewStates[0]);
+    this.join = ko.observableArray(['#td-chan']);
+    this.me = ko.observable('td-debug');
+    
     this.channels = ko.observableArray([]);
   }
   
@@ -49,6 +54,7 @@
   };
   
   MainViewModel.prototype.addChannel = function(name){
+    this.viewState(this.viewStates[2]);
     this.channels.push(new ChannelViewModel(name));
   };
   
@@ -78,6 +84,22 @@
     };
     context.$root.emit('message', msg);
     event.target.value = '';
+  };
+  
+  MainViewModel.prototype.connect = function(){
+    var self = this;
+    window.socket.emit('open', self.server, function(){
+      window.socket.emit('nick', self.me(), function(){
+        window.socket.emit('user', self.me(), self.me(), function(){
+          self.join().forEach(function(channel){
+            window.socket.emit('join', channel, function(){
+              // sent everything and asked to join a channel
+              self.viewState(self.viewStates[1]);
+            });
+          });
+        });
+      });  
+    });
   };
   
   return MainViewModel;

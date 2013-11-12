@@ -90,25 +90,5 @@ var socket = irc.on('connect', function () {
       socket.removeAllListeners(event);
     });
   });
-  
-  var config = {
-    host: { port: 6667, host: 'irc.freenode.org' },
-    nick: 'tddubug',
-    chan: ['#talking-drum'],
-    user: {  }
-  };
-  
-  // Connect
-  socket.emit('open', config, function(){
-    socket.emit('nick', config.nick, function(){
-      socket.emit('user', config.nick, config.nick, function(){
-        config.chan.forEach(function(channel){
-          socket.emit('join', channel, function(){
-            // sent everything and asked to join a channel
-          });
-        });
-      });
-    });  
-  });
 
 });
