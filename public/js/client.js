@@ -179,6 +179,9 @@
           this.model.addChannel(channel);
         }
       }
+      if (data.channel && !this.model.getChannel(data.channel)) {
+        this.model.addChannel(data.channel);
+      }
     } else {
       // TODO: update channel names
     }
@@ -190,6 +193,9 @@
     if (data.nick === this.model.me()) {
       while(data.channels && (channel = data.channels.pop())) {
         this.model.remChannel(channel);
+      }
+      if (data.channel && this.model.getChannel(data.channel)) {
+        this.model.remChannel(data.channel);
       }
     } else {
       // TODO: update channel names
