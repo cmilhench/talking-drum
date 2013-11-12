@@ -65,6 +65,7 @@ window.ko.bindingHandlers.expand = {
 var vm = new window.ViewModel();
 var client = new window.Client(vm);
 window.ko.applyBindings(vm);
+window.client = client;
 
 // -----------------------------------------------------------------
 //  listen to socket events
