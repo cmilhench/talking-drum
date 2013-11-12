@@ -39,7 +39,7 @@
     this.server = { host: 'irc.freenode.org', port: 6667 };
     this.viewStates = ['disconnected', 'connecting', 'connected'];
     this.viewState = ko.observable(this.viewStates[0]);
-    this.join = ko.observableArray(['#td-chan']);
+    this.join = ko.observableArray(['#td-chan1,#td-chan2,#td-chan3']);
     this.me = ko.observable('td-debug');
     
     this.channels = ko.observableArray([]);
@@ -59,8 +59,11 @@
   };
   
   MainViewModel.prototype.remChannel = function(name){
-    var channel = this.getChannel(name);
-    this.channels.remove(channel);
+    if ('string' === typeof name) {
+      name = this.getChannel(name);
+    }
+    console.log(this)
+    this.channels.remove(name);
   };
   
   MainViewModel.prototype.addMessage = function(message){
