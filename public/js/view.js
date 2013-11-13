@@ -77,6 +77,7 @@
     var d = document.createElement('div');
     d.innerText = text.replace(/^\s+|\s+$/g, '');
     text = d.innerHTML;
+    text = text.replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@@#\/%?=~_|!:,.;]*[-A-Z0-9+&@@#\/%=~_|])/ig, '<a href="$1" target="_blank" rel="nofollow">$1</a>');
     text = text.replace(new RegExp('(' + this.me() + ')','i'), '<b>$1</b>');
     text = text.replace(/(.*?)\u0002(.*?)\u0002(.*?)/g,'$1<b>$2</b>$3');
     text = text.replace(/(.*?)\u0016(.*?)\u0016(.*?)/g,'$1<em>$2</em>$3');
