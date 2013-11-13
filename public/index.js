@@ -11,12 +11,8 @@
 
 window.ko.bindingHandlers.scrollBottom = {
   init: function(element, valueAccessor) {
-    var previous = element.scrollTop;
     valueAccessor().subscribe(function(){
-      if (element.scrollTop === previous) {
-        element.scrollTop = element.scrollHeight;
-        previous = element.scrollTop;
-      }
+      element.scrollTop = element.scrollHeight;
     });
   }
 };

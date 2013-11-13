@@ -318,7 +318,7 @@
   // TODO: recieve mode
   
   Client.prototype.data = function(data, fn){
-    data.when = (+new Date());
+    ///^(?:[:@]([^\\s]+) )?([^\\s]+)(?: ((?:[^:\\s][^\\s]* ?)*))?(?: ?:(.*))?$/;
     console.log(data.string);
     setTimeout(fn, 1);
   };
