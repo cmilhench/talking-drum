@@ -75,7 +75,7 @@
         var e = {};
         e.target = msg.params[0];
         e.flags = msg.params[1];
-        e.params = msg.params[2] || undefined;
+        e.params = msg.params[2];
         client.emit('mode', e.target, e.flags, e.params);
       });
     },
@@ -148,12 +148,34 @@
     },
     // TODO: send kick
     motd: function(){},
-    // TODO: send who
-    who: function(){},
-    // TODO: send whois
-    whois: function(){},
-    // TODO: send whowas
-    whowas: function(){},
+    who: function(client){
+      client.on('data', function(msg){
+        if ('who' !== msg.command) return;
+        var e = {};
+        e.mask = msg.params[0];
+        e.params = msg.params[1];
+        client.emit('who', e.mark, e.params);
+      });
+    },
+    whois: function(client){
+      client.on('data', function(msg){
+        if ('whois' !== msg.command) return;
+        var e = {};
+        e.target = msg.params[0];
+        e.params = msg.params[1];
+        client.emit('whois', e.target, e.params);
+      });
+    },
+    whowas: function(client){
+      client.on('data', function(msg){
+        if ('whowas' !== msg.command) return;
+        var e = {};
+        e.nick = msg.params[0];
+        e.count = msg.params[1];
+        e.target = msg.params[2];
+        client.emit('whowas', e.message);
+      });
+    },
     // TODO: send away
     away: function(client){
       client.on('data', function(msg){
@@ -187,9 +209,9 @@
     this.use(plugins.privmsg);
     this.use(plugins.notice);
     //this.use(plugins.motd);
-    //this.use(plugins.who);
-    //this.use(plugins.whois);
-    //this.use(plugins.whowas);
+    this.use(plugins.who);
+    this.use(plugins.whois);
+    this.use(plugins.whowas);
     //this.use(plugins.away);
   }
   
