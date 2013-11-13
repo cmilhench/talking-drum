@@ -185,6 +185,12 @@
         e.message = msg.params.join(' ');
         client.emit('away', e.message);
       });
+    },
+    clear: function(client){
+      client.on('data', function(msg){
+        if ('clear' !== msg.command) return;
+        client.clear(msg.to);
+      });
     }
   };
 
@@ -213,6 +219,7 @@
     this.use(plugins.whois);
     this.use(plugins.whowas);
     //this.use(plugins.away);
+    this.use(plugins.clear);
   }
   
   Client.prototype.__proto__ = EventEmitter.prototype;
@@ -314,6 +321,14 @@
     //   when: (+new Date())
     // };
     // this.model.addMessage(message);
+    setTimeout(fn, 1);
+  };
+  
+  Client.prototype.clear = function(data, fn){
+    var channel = this.model.getChannel(data);
+    if (channel){
+      channel.messages([]);
+    }
     setTimeout(fn, 1);
   };
 
