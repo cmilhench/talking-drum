@@ -37,7 +37,7 @@ io.of('/irc').on('connection', function (socket) {
     var client = irc(stream);
     
     irc.prototype.write = function(str, fn){
-      debug('sending %s %s', str);
+      debug('sending %s', str);
       this.stream.write(str + '\r\n', fn);
     };
     irc.prototype.oper = function(name, password, fn){
@@ -48,13 +48,16 @@ io.of('/irc').on('connection', function (socket) {
         fn = params;
         params = '';
       }
-      this.write('MODE ' + target + ' ' + flags + ' ' + params, fn);
+      if (params) {
+        this.write('MODE ' + target + ' ' + flags + ' ' + params, fn);
+      } else {
+        this.write('MODE ' + target + ' ' + flags, fn);
+      }
     };
     irc.prototype.invite = function(name, channel, fn){
       this.write('INVITE ' + name + ' ' + channel, fn);
     };
     irc.prototype.notice = function(target, msg, fn){
-      debug('*notice %s %s', target, msg);
       this.write('NOTICE ' + target + ' :' + msg, fn);
     };
     //whois, whowas with callback
