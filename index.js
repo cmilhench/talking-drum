@@ -37,7 +37,6 @@ io.of('/irc').on('connection', function (socket) {
     var client = irc(stream);
     
     irc.prototype.write = function(str, fn){
-      debug('sending %s', str);
       this.stream.write(str + '\r\n', fn);
     };
     irc.prototype.oper = function(name, password, fn){
@@ -74,16 +73,10 @@ io.of('/irc').on('connection', function (socket) {
     client.use(require('./lib/plugins/away')());
     
     send.forEach(function(method){
-      debug('binding client.on(\'%s\', socket.emit(\'.%s\', ...));', method, method);
       client.on(method, socket.emit.bind(socket, method));
     });
     recv.forEach(function(method){
-      debug('binding socket.on(\'%s\', irc.%s(...));', method, method);
-      //socket.on(method, client[method].bind(client));
-      socket.on(method, function(){
-        debug('calling irc.%s(%s));', method, arguments);
-        client[method].apply(client, arguments);
-      });
+      socket.on(method, client[method].bind(client));
     });
     
     socket.on('disconnect', function() {
