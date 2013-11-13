@@ -67,11 +67,19 @@
   
   MainViewModel.prototype.addMessage = function(message){
     var channel = this.getChannel(message.to);
+    var from = message.from;
+    var text = message.message;
+    var when = message.when;
     if (!channel) {
       this.addChannel(message.to);
       return this.addMessage(message);
     }
-    channel.messages.push(new MessageViewModel(message.from, message.message, message.when));
+    var d = document.createElement('div');
+    d.innerText = text;
+    text = d.innerHTML;
+    text = text.replace(new RegExp('(' + this.me() + ')','i'), '<b>$1</b>');
+    text = text.replace(/(.*?)\u0002(.*?)\u0002(.*?)/g,'$1<b>$2</b>$3');
+    channel.messages.push(new MessageViewModel(from, text, when));
   };
   
   MainViewModel.prototype.sendMessage = function(model, event){
