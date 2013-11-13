@@ -36,32 +36,9 @@ io.of('/irc').on('connection', function (socket) {
     var stream = net.connect(server);
     var client = irc(stream);
     
-    irc.prototype.write = function(str, fn){
-      this.stream.write(str + '\r\n', fn);
-    };
-    irc.prototype.oper = function(name, password, fn){
-      this.write('OPER ' + name + ' ' + password, fn);
-    };
-    irc.prototype.mode = function(target, flags, params, fn){
-      if ('function' === typeof params) {
-        fn = params;
-        params = '';
-      }
-      if (params) {
-        this.write('MODE ' + target + ' ' + flags + ' ' + params, fn);
-      } else {
-        this.write('MODE ' + target + ' ' + flags, fn);
-      }
-    };
-    irc.prototype.invite = function(name, channel, fn){
-      this.write('INVITE ' + name + ' ' + channel, fn);
-    };
-    irc.prototype.notice = function(target, msg, fn){
-      this.write('NOTICE ' + target + ' :' + msg, fn);
-    };
     //whois, whowas with callback
     //list,motd,version,stats,links,time with callback
-
+    
     var send = [
       'welcome', 'nick', 'join', 'part', 'topic', 
       'names', 'message', 'away', 'data'
@@ -69,6 +46,7 @@ io.of('/irc').on('connection', function (socket) {
     var recv = Object.keys(irc.prototype).filter(function(key){ 
       return ['quit','use','onmessage'].indexOf(key) === -1;
     });
+    recv = recv.concat(['names','whois']);
     
     client.use(require('./lib/plugins/away')());
     
