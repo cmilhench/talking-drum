@@ -87,8 +87,10 @@ var socket = irc.on('connect', function () {
   recv.forEach(function(event){
     socket.on(event, client[event].bind(client));
   });
-  
+
+  client.model.viewState(client.model.viewStates[1]);
   socket.on('disconnect', function() {
+    client.model.viewState(client.model.viewStates[0]);
     send.forEach(function(event){
       client.removeAllListeners(event);
     });

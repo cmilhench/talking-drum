@@ -37,7 +37,7 @@
 
   function MainViewModel() {
     this.server = { host: 'irc.freenode.org', port: 6667 };
-    this.viewStates = ['disconnected', 'connecting', 'connected'];
+    this.viewStates = ['handshake','disconnected', 'connecting', 'connected'];
     this.viewState = ko.observable(this.viewStates[0]);
     this.join = ko.observableArray(['#td-chan1,#td-chan2,#td-chan3']);
     this.me = ko.observable('td-debug');
@@ -54,7 +54,7 @@
   };
   
   MainViewModel.prototype.addChannel = function(name){
-    this.viewState(this.viewStates[2]);
+    this.viewState(this.viewStates[3]);
     this.channels.push(new ChannelViewModel(name));
   };
   
@@ -96,7 +96,7 @@
           self.join().forEach(function(channel){
             window.socket.emit('join', channel, function(){
               // sent everything and asked to join a channel
-              self.viewState(self.viewStates[1]);
+              self.viewState(self.viewStates[2]);
             });
           });
         });
