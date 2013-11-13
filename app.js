@@ -41,7 +41,7 @@ io.of('/irc').on('connection', function (socket) {
     
     var send = [
       'welcome', 'nick', 'join', 'part', 'topic', 
-      'names', 'message', 'away', 'data'
+      'names', 'message', 'away', 'data', 'notice'
     ];
     var recv = Object.keys(irc.prototype).filter(function(key){ 
       return ['quit','use','onmessage'].indexOf(key) === -1;
@@ -49,6 +49,7 @@ io.of('/irc').on('connection', function (socket) {
     recv = recv.concat(['names','whois']);
     
     client.use(require('./lib/plugins/away')());
+    client.use(require('./lib/plugins/notice')());
     
     send.forEach(function(method){
       client.on(method, socket.emit.bind(socket, method));

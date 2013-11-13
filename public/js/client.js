@@ -288,11 +288,13 @@
   // TODO: recieve invite
   // TODO: recieve kick
   
+  Client.prototype.notice = 
   Client.prototype.message = function(data, fn){
     data.when = (+new Date());
+    console.log(data);
     // if this is a direct message create a channel between `me` and the *sender*
     // so that it to appear in the correct place in the ui
-    if (data.to === this.model.me()){
+    if (data.to.toLowerCase() === this.model.me().toLowerCase()){
       data.to = data.from;
     }
     this.model.addMessage(data);

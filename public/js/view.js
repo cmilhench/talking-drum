@@ -49,7 +49,7 @@
   
   MainViewModel.prototype.getChannel = function(name){
     return this.channels().filter(function(channel){ 
-      return channel.name() === name; 
+      return channel.name().toLowerCase() === name.toLowerCase(); 
     })[0];
   };
   
@@ -93,7 +93,9 @@
     window.socket.emit('open', self.server, function(){
       window.socket.emit('nick', self.me(), function(){
         window.socket.emit('user', self.me(), self.me(), function(){
-          self.join().forEach(function(channel){
+          var join = self.join();
+          join = Array.isArray(join) ? join : join.split(','); 
+          join.forEach(function(channel){
             window.socket.emit('join', channel, function(){
               // sent everything and asked to join a channel
               self.viewState(self.viewStates[2]);
