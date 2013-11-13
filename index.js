@@ -36,16 +36,51 @@ io.of('/irc').on('connection', function (socket) {
     var stream = net.connect(server);
     var client = irc(stream);
     
-    var send = ['message','names','topic','join','part','welcome','data','nick','away'];
-    var recv = ['pass','nick','user','send','join','part','names','topic'];
-  
+    irc.prototype.write = function(str, fn){
+      debug('sending %s %s', str);
+      this.stream.write(str + '\r\n', fn);
+    };
+    irc.prototype.oper = function(name, password, fn){
+      this.write('OPER ' + name + ' ' + password, fn);
+    };
+    irc.prototype.mode = function(target, flags, params, fn){
+      if ('function' === typeof params) {
+        fn = params;
+        params = '';
+      }
+      this.write('MODE ' + target + ' ' + flags + ' ' + params, fn);
+    };
+    irc.prototype.invite = function(name, channel, fn){
+      this.write('INVITE ' + name + ' ' + channel, fn);
+    };
+    irc.prototype.notice = function(target, msg, fn){
+      debug('*notice %s %s', target, msg);
+      this.write('NOTICE ' + target + ' :' + msg, fn);
+    };
+    //whois, whowas with callback
+    //list,motd,version,stats,links,time with callback
+
+    var send = [
+      'welcome', 'nick', 'join', 'part', 'topic', 
+      'names', 'message', 'away', 'data'
+    ];
+    var recv = Object.keys(irc.prototype).filter(function(key){ 
+      return ['quit','use','onmessage'].indexOf(key) === -1;
+    });
+    
     client.use(require('./lib/plugins/away')());
     
-    send.forEach(function(event){
-      client.on(event, socket.emit.bind(socket, event));
+    send.forEach(function(method){
+      debug('binding client.on(\'%s\', socket.emit(\'.%s\', ...));', method, method);
+      client.on(method, socket.emit.bind(socket, method));
     });
     recv.forEach(function(method){
-      socket.on(method, client[method].bind(client));
+      debug('binding socket.on(\'%s\', irc.%s(...));', method, method);
+      //socket.on(method, client[method].bind(client));
+      socket.on(method, function(){
+        debug('calling irc.%s(%s));', method, arguments);
+        client[method].apply(client, arguments);
+      });
     });
     
     socket.on('disconnect', function() {
