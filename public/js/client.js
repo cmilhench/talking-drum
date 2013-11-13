@@ -27,6 +27,15 @@
   };
 
   var plugins = {
+    oper: function(client){
+      client.on('data', function(msg){
+        if ('oper' !== msg.command) return;
+        var e = {};
+        e.name = msg.params[0];
+        e.pass = msg.params[1];
+        client.emit('nick', e.name, e.pass);
+      });
+    },
     nick: function(client){
       client.on('data', function(msg){
         if ('nick' !== msg.command) return;
@@ -58,8 +67,18 @@
         client.emit('part', e.channels, e.message);
       });
     },
-    // TODO: send mode
-    mode: function(){},
+    // /mode cmilhench +i
+    // /mode #chan +o cmilhench
+    mode: function(client){
+      client.on('data', function(msg){
+        if ('mode' !== msg.command) return;
+        var e = {};
+        e.target = msg.params[0];
+        e.flags = msg.params[1];
+        e.params = msg.params[2];
+        client.emit('mode', e.target, e.flags, e.params);
+      });
+    },
     topic: function(client){
       client.on('data', function(msg){
         if ('topic' !== msg.command) return;
@@ -83,8 +102,16 @@
     },
     // TODO: send list
     list: function(){},
-    // TODO: send invite
-    invite: function(){},
+    // /invite cmilhench #chan
+    invite: function(client){
+      client.on('data', function(msg){
+        if ('invite' !== msg.command) return;
+        var e = {};
+        e.name = msg.params[0];
+        e.channel = msg.params[1];
+        client.emit('invite', e.name, e.channel);
+      });
+    },
     // TODO: send kick
     kick: function(){},
     message: function(client){
@@ -107,6 +134,16 @@
         e.message = msg.params.join(' ');
         client.emit('send', e.to, e.message);
         client.message(e);
+      });
+    },
+    notice: function(client){
+      client.on('data', function(msg){
+        if ('notice' !== msg.command) return;
+        var e = {};
+        e.from = msg.from;
+        e.to = msg.params.shift();
+        e.message = msg.params.join(' ');
+        client.emit('notice', e.to, e.message);
       });
     },
     // TODO: send kick
@@ -155,6 +192,13 @@
   }
   
   Client.prototype.__proto__ = EventEmitter.prototype;
+  
+  Client.prototype.emit = function(){
+    var name = arguments[0];
+    delete arguments[0];
+    console.log('client.emit(\'' + name + '\')', arguments);
+    EventEmitter.prototype.emit.apply(this, arguments);
+  };
   
   // TODO: Handle identify
   
