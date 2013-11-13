@@ -75,7 +75,7 @@
         var e = {};
         e.target = msg.params[0];
         e.flags = msg.params[1];
-        e.params = msg.params[2];
+        e.params = msg.params[2] || undefined;
         client.emit('mode', e.target, e.flags, e.params);
       });
     },
@@ -172,18 +172,20 @@
     this.parser = new Parser();
     this.parser.on('message', this.emit.bind(this, 'data'));
     if (model) this.model.on('message', this.parser.line.bind(this.parser));
+    this.use(plugins.oper);
     this.use(plugins.nick);
     //this.use(plugins.quit);
     this.use(plugins.join);
     this.use(plugins.part);
-    //this.use(plugins.mode);
+    this.use(plugins.mode);
     this.use(plugins.topic);
     this.use(plugins.names);
     //this.use(plugins.list);
-    //this.use(plugins.invite);
+    this.use(plugins.invite);
     //this.use(plugins.kick);
     this.use(plugins.message);
     this.use(plugins.privmsg);
+    this.use(plugins.notice);
     //this.use(plugins.motd);
     //this.use(plugins.who);
     //this.use(plugins.whois);
@@ -193,12 +195,12 @@
   
   Client.prototype.__proto__ = EventEmitter.prototype;
   
-  Client.prototype.emit = function(){
-    var name = arguments[0];
-    delete arguments[0];
-    console.log('client.emit(\'' + name + '\')', arguments);
-    EventEmitter.prototype.emit.apply(this, arguments);
-  };
+  // Client.prototype.emit = function(){
+//     var name = arguments[0];
+//     delete arguments[0];
+//     console.log('client.emit(\'' + name + '\')', arguments);
+//     EventEmitter.prototype.emit.apply(this, arguments);
+//   };
   
   // TODO: Handle identify
   
