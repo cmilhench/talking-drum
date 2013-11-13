@@ -75,25 +75,33 @@
       return this.addMessage(message);
     }
     var d = document.createElement('div');
-    d.innerText = text;
+    d.innerText = text.replace(/^\s+|\s+$/g, '');
     text = d.innerHTML;
     text = text.replace(new RegExp('(' + this.me() + ')','i'), '<b>$1</b>');
     text = text.replace(/(.*?)\u0002(.*?)\u0002(.*?)/g,'$1<b>$2</b>$3');
+    text = text.replace(/(.*?)\u0016(.*?)\u0016(.*?)/g,'$1<em>$2</em>$3');
     channel.messages.push(new MessageViewModel(from, text, when));
   };
   
   MainViewModel.prototype.sendMessage = function(model, event){
-    if (event.which !== 13) {
-      return true;
-    }
     var context = ko.contextFor(event.target);
-    var msg = {
-      from: context.$root.me(),
-      to: model.name(),
-      string: event.target.value
-    };
-    context.$root.emit('message', msg);
-    event.target.value = '';
+    var me = context.$root.me().toLowerCase();
+    if (event.which === 38) {
+      var last = model.messages().filter(function(message){
+        return message.from().toLowerCase() === me;
+      });
+      last = last[last.length-1];
+      if (last) { event.target.value = last.text(); }
+    }
+    if (event.which === 13) {
+      var msg = {
+        from: context.$root.me(),
+        to: model.name(),
+        string: event.target.value
+      };
+      context.$root.emit('message', msg);
+      event.target.value = '';
+    }
   };
   
   MainViewModel.prototype.connect = function(){
