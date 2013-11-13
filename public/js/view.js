@@ -62,7 +62,6 @@
     if ('string' === typeof name) {
       name = this.getChannel(name);
     }
-    console.log(this)
     this.channels.remove(name);
   };
   
