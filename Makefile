@@ -1,5 +1,5 @@
 dev:
-	grunt watch & DEBUG=http,object.io,slate-irc nodemon index.js
+	grunt watch & DEBUG=app,slate-irc nodemon app.js
 	
 test:
 	./node_modules/jshint/bin/jshint **/*.js --config ./.jshintrc --exclude ./public/test/lib/**/*

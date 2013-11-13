@@ -10,7 +10,7 @@
 // -----------------------------------------------------------------
 //  Dependencies
 
-var debug   = require('debug')('http'),
+var debug   = require('debug')('app'),
     connect = require('connect'),
     sockets = require('socket.io'),
     http    = require('http'),
