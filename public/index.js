@@ -75,7 +75,8 @@ var socket = irc.on('connect', function () {
   var send = [ 
     'write','pass','nick','user','send',
     'join','part','topic','kick','oper',
-    'mode','invite','notice' 
+    'mode','invite','notice','who','whois',
+    'whowas'
   ];
   var recv = Object.keys( window.Client.prototype).filter(function(key){ 
     return ['use'].indexOf(key) === -1;
