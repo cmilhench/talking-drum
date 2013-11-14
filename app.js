@@ -68,8 +68,8 @@ io.of('/irc').on('connection', function (socket) {
     var recv = [
       'write','pass','nick','user','send',
       'join','part','topic','kick','oper',
-      'mode','invite','notice','quit'/*'who',
-      'whois', 'whowas',*/ 
+      'mode','invite','notice','quit', 'whois', 
+      /*'who', 'whowas'*/ 
     ];
 
     subscribe(recv, send);

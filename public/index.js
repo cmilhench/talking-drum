@@ -89,8 +89,8 @@ var socket = irc.on('connect', function () {
   var send = [ 
     'write','pass','nick','user','send',
     'join','part','topic','kick','oper',
-    'mode','invite','notice','who','quit',
-    'whois','whowas'
+    'mode','invite','notice','quit','whois',
+    'who','whowas'
   ];
   
   var recv = [
