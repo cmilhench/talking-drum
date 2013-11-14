@@ -39,9 +39,22 @@
     this.server = { host: 'irc.freenode.org', port: 6667 };
     this.viewStates = ['disconnected','closed', 'opening', 'opened'];
     this.viewState = ko.observable('disconnected');
-    this.join = ko.observableArray(['#td-chan1,#td-chan2,#td-chan3']);
-    this.me = ko.observable('td-debug');
-    
+    this.join = ko.computed({
+      read: function () {
+        if (!this['join']) return '#td-c1,#td-c2';
+        try { return JSON.parse(this['join']); } finally{}
+      },
+      write: function (value) { this['join'] = JSON.stringify(value); },
+      owner: window.localStorage
+    });
+    this.me = ko.computed({
+      read: function () {
+        if (!this['me']) return 'td-debug2';
+        try { return JSON.parse(this['me']); } finally{}
+      },
+      write: function (value) { this['me'] = JSON.stringify(value); },
+      owner: window.localStorage
+    });
     this.channels = ko.observableArray([]);
   }
   
