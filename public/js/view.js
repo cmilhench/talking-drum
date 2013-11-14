@@ -36,31 +36,28 @@
     self.messages = ko.observableArray([]);
     this.history = [];
     self.totalUnseen = ko.computed(function() {
-      return self.messages().filter(function(m){ return !m.seen(); }).length;
+      return self.messages().filter(function(m){ 
+        return !m.seen(); 
+      }).length;
     }); 
   }
 
   function MainViewModel() {
+    var self = this;
     this.server = { host: 'irc.freenode.org', port: 6667 };
     this.viewStates = ['disconnected','closed', 'opening', 'opened'];
     this.viewState = ko.observable('disconnected');
-    this.join = ko.computed({
-      read: function () {
-        if (!this['join']) return '#td-c1,#td-c2';
-        try { return JSON.parse(this['join']); } finally{}
-      },
-      write: function (value) { this['join'] = JSON.stringify(value); },
-      owner: window.localStorage
-    });
-    this.me = ko.computed({
-      read: function () {
-        if (!this['me']) return 'td-debug2';
-        try { return JSON.parse(this['me']); } finally{}
-      },
-      write: function (value) { this['me'] = JSON.stringify(value); },
-      owner: window.localStorage
-    });
+    this.me = ko.observable('td-debug');
+    this.join = ko.observable('#td-debug');
     this.channels = ko.observableArray([]);
+    this.channel = ko.observable();
+    self.totalUnseen = ko.computed(function() {
+      return self.channels().map(function(c){ 
+        return c.totalUnseen();
+      }).reduce(function(a,b){ 
+        return a + b; 
+      }, 0);
+    }); 
   }
   
   MainViewModel.prototype.__proto__ = EventEmitter.prototype;
@@ -72,8 +69,11 @@
   };
   
   MainViewModel.prototype.addChannel = function(name){
-    this.viewState('opened');
     this.channels.push(new ChannelViewModel(name));
+    if (this.channels().length === 1) {
+      this.channel(this.channels()[0]);
+      this.viewState('opened');
+    }
   };
   
   MainViewModel.prototype.remChannel = function(name){

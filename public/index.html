@@ -7,7 +7,7 @@
   <link href='index.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
-  <div class="container" data-bind="style: {'min-width': (channels().length * 401) + 'px'}">
+  <div class="container" data--bind="style: {'min-width': (channels().length * 401) + 'px'}">
     <div data-bind="visible: viewState() === 'disconnected'" style="display:none">
       <p>Handshake, please wait...</p>
     </div>
@@ -15,7 +15,7 @@
       <div class="form-group">
         <div class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-          <input type="text" class="form-control" name="nick" placeholder="Nickname" data-bind="value: me" required autofocus>
+          <input type="text" class="form-control" name="nick" placeholder="Nickname" data-bind="value: me, valueUpdate:'afterkeydown'" required autofocus>
         </div>
       </div>
       <div class="form-group">
@@ -34,11 +34,16 @@
       <p>Please join a channel... (press f5)</p>
       <!-- /ko -->
       <!-- ko if: channels().length > 0 -->
-      <div data-bind="foreach: channels">
-        <div id="%s" class="panel panel-default" style="width:400px;border-right:1px solid #B8B8B8; float:left">
+      <div data--bind="foreach: channels" data-bind="foreach: channel">
+        <div id="%s" class="panel panel-default" xstyle="width:400px;border-right:1px solid #B8B8B8; float:left">
           <div class="panel-heading">
             <a href="javascript:" title="close" data-bind="click: $root.sendPart ">X</a>
-            <strong data-bind="text: name">%name</strong>
+            (<span data-bind="text: $root.totalUnseen()"></span>)
+            <select data-bind="options: $root.channels, 
+                              optionsText: function(item) {
+                                return item.name() + ' (' + item.totalUnseen() + ')'
+                              }, 
+                              value: $root.channel"></select>
             <span>&nbsp;&mdash;&nbsp;</span>
             <span title="%topic" data-bind="text: topic, attr: { title: topic }">%topic</span>
           </div>
