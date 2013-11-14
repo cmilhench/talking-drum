@@ -338,12 +338,12 @@
   
   Client.prototype.data = function(data, fn){
     ///^(?:[:@]([^\\s]+) )?([^\\s]+)(?: ((?:[^:\\s][^\\s]* ?)*))?(?: ?:(.*))?$/;
-    console.log(data.string);
+    //console.log(data.string);
     setTimeout(fn, 1);
   };
   
   Client.prototype.quit = function(data, fn){
-    console.log(data.message);
+    //console.log(data.message);
     setTimeout(fn, 1);
   };
   

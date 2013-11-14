@@ -70,8 +70,12 @@
   
   MainViewModel.prototype.addChannel = function(name){
     this.channels.push(new ChannelViewModel(name));
+    if (!this.channel() || this.channel().name() !== 'NickServ') {
+      if (name !== 'ChanServ') {
+        this.channel(this.channels()[this.channels().length-1]);
+      }
+    }
     if (this.channels().length === 1) {
-      this.channel(this.channels()[0]);
       this.viewState('opened');
     }
   };
