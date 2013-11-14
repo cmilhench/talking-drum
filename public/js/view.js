@@ -105,6 +105,22 @@
     }
   };
   
+  
+  MainViewModel.prototype.sendPart = function(model){
+    var context = ko.contextFor(event.target);
+    if (context.$root.channels().length <= 1) { return; }
+    if (model.name()[0] === '#') {
+      var msg = {
+        from: context.$root.me(),
+        to: model.name(),
+        string: '/part'
+      };
+      context.$root.emit('message', msg);
+    } else {
+      context.$root.channels.remove(model);
+    }
+  };
+  
   MainViewModel.prototype.connect = function(){
     var self = this;
     window.socket.emit('open', self.server, function(){

@@ -37,7 +37,7 @@
       <div data-bind="foreach: channels">
         <div id="%s" class="panel panel-default" style="width:400px;border-right:1px solid #B8B8B8; float:left">
           <div class="panel-heading">
-            <a href="javascript:" title="close" data-bind="click: function() { $root.channels.remove($data); }">X</a>
+            <a href="javascript:" title="close" data-bind="click: $root.sendPart ">X</a>
             <strong data-bind="text: name">%name</strong>
             <span>&nbsp;&mdash;&nbsp;</span>
             <span title="%topic" data-bind="text: topic, attr: { title: topic }">%topic</span>
