@@ -45,8 +45,6 @@
         client.emit('nick', e.new);
       });
     },
-    // TODO: send quit
-    quit: function(){},
     join: function(client){
       client.on('data', function(msg){
         if ('join' !== msg.command) return;
@@ -146,7 +144,7 @@
         client.emit('notice', e.to, e.message);
       });
     },
-    // TODO: send kick
+    // TODO: send motd
     motd: function(){},
     who: function(client){
       client.on('data', function(msg){
@@ -176,7 +174,6 @@
         client.emit('whowas', e.message);
       });
     },
-    // TODO: send away
     away: function(client){
       client.on('data', function(msg){
         if ('away' !== msg.command) return;
@@ -184,6 +181,12 @@
         e.nick = msg.from;
         e.message = msg.params.join(' ');
         client.emit('away', e.message);
+      });
+    },
+    quit: function(client){
+      client.on('data', function(msg){
+        if ('quit' !== msg.command) return;
+        client.emit('quit', msg.params.join(' '));
       });
     },
     clear: function(client){
@@ -202,7 +205,7 @@
     if (model) this.model.on('message', this.parser.line.bind(this.parser));
     this.use(plugins.oper);
     this.use(plugins.nick);
-    //this.use(plugins.quit);
+    this.use(plugins.quit);
     this.use(plugins.join);
     this.use(plugins.part);
     this.use(plugins.mode);
@@ -298,7 +301,6 @@
   Client.prototype.notice = 
   Client.prototype.message = function(data, fn){
     data.when = (+new Date());
-    console.log(data);
     // if this is a direct message create a channel between `me` and the *sender*
     // so that it to appear in the correct place in the ui
     if (data.to.toLowerCase() === this.model.me().toLowerCase()){
@@ -337,6 +339,17 @@
   Client.prototype.data = function(data, fn){
     ///^(?:[:@]([^\\s]+) )?([^\\s]+)(?: ((?:[^:\\s][^\\s]* ?)*))?(?: ?:(.*))?$/;
     console.log(data.string);
+    setTimeout(fn, 1);
+  };
+  
+  Client.prototype.quit = function(data, fn){
+    console.log(data.message);
+    setTimeout(fn, 1);
+  };
+  
+  Client.prototype.close = function(data, fn){
+    this.model.channels([]);
+    this.model.viewState('closed');
     setTimeout(fn, 1);
   };
   

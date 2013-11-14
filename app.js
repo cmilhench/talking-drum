@@ -36,43 +36,59 @@ io.of('/irc').on('connection', function (socket) {
     var stream = net.connect(server);
     var client = irc(stream);
     
+    client.use(require('./lib/plugins/away')());
+    client.use(require('./lib/plugins/notice')());
     //whois, whowas with callback
     //list,motd,version,stats,links,time with callback
     
-    var send = [
-      'welcome', 'nick', 'join', 'part', 'topic', 
-      'names', 'message', 'away', 'data', 'notice'
-    ];
-    var recv = Object.keys(irc.prototype).filter(function(key){ 
-      return ['quit','use','onmessage'].indexOf(key) === -1;
-    });
-    recv = recv.concat(['names','whois']);
-    
-    client.use(require('./lib/plugins/away')());
-    client.use(require('./lib/plugins/notice')());
-    
-    send.forEach(function(method){
-      client.on(method, socket.emit.bind(socket, method));
-    });
-    recv.forEach(function(method){
-      socket.on(method, client[method].bind(client));
-    });
-    
-    socket.on('disconnect', function() {
-      send.forEach(function(event){
-        client.removeAllListeners(event);
+    var subscribe = function(i, o){
+      i.forEach(function(method){
+        socket.on(method, client[method].bind(client));
       });
-      recv.forEach(function(method){
+      o.forEach(function(method){
+        client.on(method, socket.emit.bind(socket, method));
+      });
+    };
+    
+    var unsubscribe = function(i, o) {
+      i.forEach(function(method){
         socket.removeAllListeners(method);
       });
-      try {
-        if (client) { client.quit(); }
+      o.forEach(function(method){
+        client.removeAllListeners(method);
+      });
+    };
+    
+    var send = [
+      'welcome','nick','join','part','topic', 
+      'names','message','notice','away','data', 
+      'quit'
+    ];
+
+    var recv = [
+      'write','pass','nick','user','send',
+      'join','part','topic','kick','oper',
+      'mode','invite','notice','quit'/*'who',
+      'whois', 'whowas',*/ 
+    ];
+
+    subscribe(recv, send);
+    
+    // Client disconnect
+    socket.on('disconnect', function() {
+      unsubscribe(recv, send);
+      socket.removeAllListeners('disconnect');
+      if (client && stream.writable) { 
+        client.quit('Client disconnected'); 
       }
-      finally{}
     });
     
+    // Server disconnect
     stream.on('end', function(){
-      socket.disconnect();
+      unsubscribe(recv, send);
+      socket.removeAllListeners('disconnect');
+      socket.emit('close');
+      stream.destroy();
     });
     
     if (fn) fn();

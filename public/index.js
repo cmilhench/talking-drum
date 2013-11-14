@@ -68,32 +68,47 @@ window.client = client;
 var irc = window.io.connect('http://localhost:3000/irc');
 var socket = irc.on('connect', function () {
   
+  var subscribe = function(i, o){
+    i.forEach(function(method){
+      socket.on(method, client[method].bind(client));
+    });
+    o.forEach(function(method){
+      client.on(method, socket.emit.bind(socket, method));
+    });
+  };
+  
+  var unsubscribe = function(i, o) {
+    i.forEach(function(method){
+      socket.removeAllListeners(method);
+    });
+    o.forEach(function(method){
+      client.removeAllListeners(method);
+    });
+  };
+  
   var send = [ 
     'write','pass','nick','user','send',
     'join','part','topic','kick','oper',
-    'mode','invite','notice','who','whois',
-    'whowas'
+    'mode','invite','notice','who','quit',
+    'whois','whowas'
   ];
-  var recv = Object.keys( window.Client.prototype).filter(function(key){ 
-    return ['use'].indexOf(key) === -1;
-  });
   
-  send.forEach(function(event){
-    client.on(event, socket.emit.bind(socket, event));
-  });
-  recv.forEach(function(event){
-    socket.on(event, client[event].bind(client));
-  });
+  var recv = [
+    'welcome','nick','join','part','topic', 
+    'names','message','notice','away','data', 
+    'quit', 
+    'close'
+  ];
 
-  client.model.viewState(client.model.viewStates[1]);
+  subscribe(recv, send);
+  
+  client.model.viewState('closed');
+  
+  // Server disconnect
   socket.on('disconnect', function() {
-    client.model.viewState(client.model.viewStates[0]);
-    send.forEach(function(event){
-      client.removeAllListeners(event);
-    });
-    recv.forEach(function(event){
-      socket.removeAllListeners(event);
-    });
+    unsubscribe(recv, send);
+    socket.removeAllListeners('disconnect');
+    client.model.viewState('disconnected');
   });
 
 });

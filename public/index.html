@@ -8,10 +8,10 @@
 </head>
 <body>
   <div class="container" data-bind="style: {'min-width': (channels().length * 401) + 'px'}">
-    <div data-bind="visible: viewState() === 'handshake'" style="display:none">
+    <div data-bind="visible: viewState() === 'disconnected'" style="display:none">
       <p>Handshake, please wait...</p>
     </div>
-    <form class="form-signin" data-bind="visible: viewState() === 'disconnected'" style="display:none">
+    <form class="form-signin" data-bind="visible: viewState() === 'closed'" style="display:none">
       <div class="form-group">
         <div class="input-group">
           <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
@@ -26,10 +26,10 @@
       </div>
       <button type="button" class="btn btn-lg btn-primary btn-block" data-bind="event: { click: $root.connect }">Connect</button>
     </form>
-    <div data-bind="visible: viewState() === 'connecting'" style="display:none">
+    <div data-bind="visible: viewState() === 'opening'" style="display:none">
       <p>Connecting, please wait...</p>
     </div>
-    <div data-bind="visible: viewState() === 'connected'" style="display:none">
+    <div data-bind="visible: viewState() === 'opened'" style="display:none">
       <!-- ko if: channels().length === 0 -->
       <p>Please join a channel... (press f5)</p>
       <!-- /ko -->
