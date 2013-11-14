@@ -33,6 +33,7 @@
     self.topic = ko.observable(topic);
     self.names = ko.observableArray(names);
     self.messages = ko.observableArray([]);
+    this.history = [];
   }
 
   function MainViewModel() {
@@ -98,21 +99,24 @@
   };
   
   MainViewModel.prototype.sendMessage = function(model, event){
-    var context = ko.contextFor(event.target);
-    var me = context.$root.me().toLowerCase();
+    var i, context = ko.contextFor(event.target);
     if (event.which === 38) {
-      var last = model.messages().filter(function(message){
-        return message.from().toLowerCase() === me;
-      });
-      last = last[last.length-1];
-      if (last) { event.target.value = last.text(); }
+      i = model.history.indexOf(event.target.value);
+      if (i === -1) { i = model.history.length; }
+      if (model.history[i-1]) { event.target.value = model.history[i-1]; }
+    }
+    if (event.which === 40) {
+      i = model.history.indexOf(event.target.value);
+      if (model.history[i+1]) { event.target.value = model.history[i+1]; }
     }
     if (event.which === 13) {
       var msg = {
         from: context.$root.me(),
         to: model.name(),
-        string: event.target.value
+        string: event.target.value.replace(/^\s+|\s+$/g, '')
       };
+      if (!msg.string) { return; }
+      model.history.push(msg.string);
       context.$root.emit('message', msg);
       event.target.value = '';
     }
