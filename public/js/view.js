@@ -25,6 +25,7 @@
     self.time = ko.computed(function(){
       return self.date().substr(11,5);
     });
+    self.seen = ko.observable(false);
   }
 
   function ChannelViewModel(name, topic, names) {
@@ -34,6 +35,9 @@
     self.names = ko.observableArray(names);
     self.messages = ko.observableArray([]);
     this.history = [];
+    self.totalUnseen = ko.computed(function() {
+      return self.messages().filter(function(m){ return !m.seen(); }).length;
+    }); 
   }
 
   function MainViewModel() {
