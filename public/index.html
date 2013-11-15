@@ -24,7 +24,7 @@
           <input type="text" class="form-control" name="chan" placeholder="#Node.js" data-bind="value: join" required>
         </div>
       </div>
-      <button type="button" class="btn btn-lg btn-primary btn-block" data-bind="event: { click: $root.connect }">Connect</button>
+      <button type="submit" class="btn btn-lg btn-primary btn-block" data-bind="event: { click: $root.connect }">Connect</button>
     </form>
     <div data-bind="visible: viewState() === 'opening'" style="display:none">
       <p>Connecting, please wait...</p>
@@ -62,7 +62,7 @@
               </blockquote>
             </li>
           </ol>
-          <div class="panel-footer" data-bind="expand: messages">
+          <div class="panel-footer" data-bind="expand: messages, template: { afterRender: function(){ var e = arguments[0][1]; setTimeout(function(){e.focus()},1); } }">
             <textarea data-bind="event: { keyup: $root.sendMessage }"></textarea>
           </div>
         </div>
