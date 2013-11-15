@@ -40,7 +40,7 @@ button {
   width: 250px;
   margin: 30px auto 0;
 }
-.form-signin input {
+.form-signin input[type=text] {
   width: 236px
 }
 .form-signin button {

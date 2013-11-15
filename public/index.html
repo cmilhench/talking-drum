@@ -7,7 +7,7 @@
   <link href='index.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
-  <div class="container" data--bind="style: {'min-width': (channels().length * 401) + 'px'}">
+  <div class="container" data-bind="attr: { style: $root.multi() ? 'min-width:' + (channels().length * 401) + 'px':''}">
     <div data-bind="visible: viewState() === 'disconnected'" style="display:none">
       <p>Handshake, please wait...</p>
     </div>
@@ -24,6 +24,11 @@
           <input type="text" class="form-control" name="chan" placeholder="#Node.js" data-bind="value: join" required>
         </div>
       </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-bind="checked: multi"> View all channels at once?
+        </label>
+      </div>
       <button type="submit" class="btn btn-lg btn-primary btn-block" data-bind="event: { click: $root.connect }">Connect</button>
     </form>
     <div data-bind="visible: viewState() === 'opening'" style="display:none">
@@ -34,12 +39,20 @@
       <p>Please join a channel... (press f5)</p>
       <!-- /ko -->
       <!-- ko if: channels().length > 0 -->
-      <div data--bind="foreach: channels" data-bind="foreach: channel">
-        <div id="%s" class="panel panel-default" xstyle="width:400px;border-right:1px solid #B8B8B8; float:left">
+      <div data-bind="foreach: $root.multi() ? channels : channel">
+        <div id="%s" class="panel panel-default" data-bind="attr: { style: $root.multi() ? 'width:400px;border-right:1px solid #B8B8B8; float:left':'' }">
           <div class="panel-heading">
             <!-- ko if: name() !== '*' -->
             <a href="javascript:" title="close" data-bind="click: $root.sendPart ">X</a>
             <!-- /ko -->
+            <!-- ko if: $root.multi() -->
+            <span data-bind="text: function(){
+              var name = $data.name();
+              if (name === '*') name = 'console';
+              return name;
+            }()"></span>
+            <!-- /ko -->
+            <!-- ko if: !$root.multi() -->
             (<span data-bind="text: $root.totalUnseen()"></span>)
             <select data-bind="options: $root.channels, 
                               optionsText: function(item) {
@@ -48,6 +61,7 @@
                                 return name + ' (' + item.totalUnseen() + ')'
                               }, 
                               value: $root.channel"></select>
+            <!-- /ko -->
             <span>&nbsp;&mdash;&nbsp;</span>
             <span title="%topic" data-bind="text: topic, attr: { title: topic }">%topic</span>
           </div>

@@ -58,6 +58,7 @@
     this.viewState = ko.observable('disconnected');
     this.me = ko.observable('');
     this.join = ko.observable('');
+    this.multi = ko.observable(false);
     this.channels = ko.observableArray([]);
     this.channel = ko.observable();
     self.totalUnseen = ko.computed(function() {
