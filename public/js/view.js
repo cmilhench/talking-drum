@@ -72,8 +72,9 @@
   MainViewModel.prototype.__proto__ = EventEmitter.prototype;
   
   MainViewModel.prototype.getChannel = function(name){
+    name = name.toLowerCase();
     return this.channels().filter(function(channel){ 
-      return channel.name().toLowerCase() === name.toLowerCase(); 
+      return channel.name().toLowerCase() === name; 
     })[0];
   };
   

@@ -259,6 +259,7 @@
     var channel;
     if (data.nick === this.model.me()) {
       while(data.channels && (channel = data.channels.pop())) {
+        if (!channel) break;
         if (!this.model.getChannel(channel)) {
           this.model.addChannel(channel);
         }
@@ -275,8 +276,10 @@
   
   Client.prototype.part = function(data, fn){
     var channel;
+    console.log(data);
     if (data.nick === this.model.me()) {
       while(data.channels && (channel = data.channels.pop())) {
+        if (!channel) break;
         this.model.remChannel(channel);
       }
       if (data.channel && this.model.getChannel(data.channel)) {
