@@ -37,11 +37,15 @@
       <div data--bind="foreach: channels" data-bind="foreach: channel">
         <div id="%s" class="panel panel-default" xstyle="width:400px;border-right:1px solid #B8B8B8; float:left">
           <div class="panel-heading">
+            <!-- ko if: name() !== '*' -->
             <a href="javascript:" title="close" data-bind="click: $root.sendPart ">X</a>
+            <!-- /ko -->
             (<span data-bind="text: $root.totalUnseen()"></span>)
             <select data-bind="options: $root.channels, 
                               optionsText: function(item) {
-                                return item.name() + ' (' + item.totalUnseen() + ')'
+                                var name = item.name();
+                                if (name === '*') name = 'console';
+                                return name + ' (' + item.totalUnseen() + ')'
                               }, 
                               value: $root.channel"></select>
             <span>&nbsp;&mdash;&nbsp;</span>

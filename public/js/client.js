@@ -119,7 +119,11 @@
         e.from = msg.from;
         e.to = msg.to;
         e.message = msg.string;
-        client.emit('send', e.to, e.message);
+        if (e.to === '*') {
+          client.emit('write', e.message);
+        } else {
+          client.emit('send', e.to, e.message);
+        }
         client.message(e);
       });
     },
@@ -356,6 +360,10 @@
         data.to = this.model.me();
         return this.notice(data, fn);
       case 'ERR_UNAVAILRESOURCE':
+        data.from = '*';
+        data.to = this.model.me();
+        return this.notice(data, fn);
+      case 'ERR_UNKNOWNCOMMAND':
         data.from = '*';
         data.to = this.model.me();
         return this.notice(data, fn);
