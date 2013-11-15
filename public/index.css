@@ -75,6 +75,11 @@ button {
   padding: 10px 15px
 }
 
+.panel-body.list-group li.followon {
+  padding-top:0;
+  margin-top:-10px;
+}
+
 .panel-body blockquote {
 	margin: 0;
 	padding: 0;
@@ -91,6 +96,11 @@ button {
 .panel-body blockquote footer,
 .panel-body blockquote header {
 	color: #B8B8B8;
+}
+
+.panel-body li.followon blockquote footer,
+.panel-body li.followon blockquote header {
+  display: none;
 }
 
 .panel-footer {

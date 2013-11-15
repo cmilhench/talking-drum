@@ -12,64 +12,79 @@
 <body>
   <div class="container">
     
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <strong>#Node.js</strong>
-        <span title="The topic of the room, which may be rather!">
-          &mdash; The topic of the room, which may be rather long!
-        </span>
+    <div data-bind="visible: viewState() === 'opened'" style="">
+      <!-- ko if: channels().length === 0 --><!-- /ko -->
+      <!-- ko if: channels().length > 0 -->
+      <div data--bind="foreach: channels" data-bind="foreach: channel">
+        <div id="%s" class="panel panel-default" xstyle="width:400px;border-right:1px solid #B8B8B8; float:left">
+          <div class="panel-heading">
+            <a href="javascript:" title="close" data-bind="click: $root.sendPart ">X</a>
+            (<span data-bind="text: $root.totalUnseen()">0</span>)
+            <select data-bind="options: $root.channels, 
+                              optionsText: function(item) {
+                                return item.name() + ' (' + item.totalUnseen() + ')'
+                              }, 
+                              value: $root.channel"><option value="">* (0)</option><option value="">#td-debug (0)</option><option value="">#257 (0)</option></select>
+            <span>&nbsp;—&nbsp;</span>
+            <span data-bind="text: topic, attr: { title: topic }"></span>
+          </div>
+          <ol class="panel-body list-group" data-bind="foreach: messages, contract: messages, scrollBottom: messages" style="max-height: 100%;">
+            <li data-bind="template: { afterRender: function(){ $data.seen(true) } }">
+              <blockquote>
+                <header>
+                  <cite class="author" data-bind="text: from">td-debug</cite>&nbsp;
+                  <time title="2013-11-15T10:01:40.135Z" data-bind="text: time, attr: { title: date }">10:01</time>
+                </header>
+                <p data-bind="html: text">hello</p>
+              </blockquote>
+            </li>
+      
+            <li data-bind="template: { afterRender: function(){ $data.seen(true) } }">
+              <blockquote>
+                <header>
+                  <cite class="author" data-bind="text: from">cmilhench</cite>&nbsp;
+                  <time title="2013-11-15T10:01:44.127Z" data-bind="text: time, attr: { title: date }">10:01</time>
+                </header>
+                <p data-bind="html: text">Hi</p>
+              </blockquote>
+            </li>
+      
+            <li data-bind="template: { afterRender: function(){ $data.seen(true) } }" class="followon">
+              <blockquote>
+                <header>
+                  <cite class="author" data-bind="text: from">cmilhench</cite>&nbsp;
+                  <time title="2013-11-15T10:01:50.350Z" data-bind="text: time, attr: { title: date }">10:01</time>
+                </header>
+                <p data-bind="html: text">How's it going?</p>
+              </blockquote>
+            </li>
+      
+            <li data-bind="template: { afterRender: function(){ $data.seen(true) } }">
+              <blockquote>
+                <header>
+                  <cite class="author" data-bind="text: from">td-debug</cite>&nbsp;
+                  <time title="2013-11-15T10:01:58.591Z" data-bind="text: time, attr: { title: date }">10:01</time>
+                </header>
+                <p data-bind="html: text">not too bad thanks</p>
+              </blockquote>
+            </li>
+      
+            <li data-bind="template: { afterRender: function(){ $data.seen(true) } }" class="followon">
+              <blockquote>
+                <header>
+                  <cite class="author" data-bind="text: from">td-debug</cite>&nbsp;
+                  <time title="2013-11-15T10:02:19.981Z" data-bind="text: time, attr: { title: date }">10:02</time>
+                </header>
+                <p data-bind="html: text">can't complaine</p>
+              </blockquote>
+            </li>
+          </ol>
+          <div class="panel-footer" data-bind="expand: messages" style="min-height: 234px;">
+            <textarea data-bind="event: { keyup: $root.sendMessage }"></textarea>
+          </div>
+        </div>
       </div>
-      <ol class="panel-body list-group">
-        <li class="list-group-item">
-          <blockquote>
-            <header>
-              <cite class="author">cmilhench</cite>
-              <time datetime="2013-11-05 18:22">18:22</time>
-            </header>
-            <p>Hey <strong>colinm</strong>, can you remember if the time tag is supported in chrome?</p>
-          </blockquote>
-        </li>
-        <li class="list-group-item">
-          <blockquote>
-            <header>
-              <cite class="author">colinm</cite>
-              <time datetime="2013-11-05 18:29">18:29</time>
-            </header>
-            <p>I think it is, why not just give it a go?</p>
-          </blockquote>
-        </li>
-        <li class="list-group-item">
-          <blockquote>
-            <header>
-              <cite class="author">cmilhench</cite>
-              <time datetime="2013-11-05 18:32">18:32</time>
-            </header>
-            <p>Arrrg! network issues</p>
-          </blockquote>
-        </li>
-        <li class="list-group-item">
-          <blockquote>
-            <header>
-              <cite class="author">cmilhench</cite>
-              <time datetime="2013-11-05 18:34">18:34</time>
-            </header>
-            <p>seems to be working</p>
-            <p>again now</p>
-          </blockquote>
-        </li>
-        <li class="list-group-item">
-          <blockquote>
-            <header>
-              <cite class="author">colinm</cite>
-              <time datetime="2013-11-05 18:34">18:34</time>
-            </header>
-            <p>(y)</p>
-          </blockquote>
-        </li>
-      </ol>
-      <div class="panel-footer">
-        <textarea></textarea>
-      </div>
+      <!-- /ko -->
     </div>
   
   </div> 
