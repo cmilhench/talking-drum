@@ -38,6 +38,7 @@ io.of('/irc').on('connection', function (socket) {
     
     //whois, whowas with callback
     //list,motd,version,stats,links,time with callback
+    client.use(require('./lib/plugins/errors')());
     
     var subscribe = function(i, o){
       i.forEach(function(method){
@@ -60,7 +61,7 @@ io.of('/irc').on('connection', function (socket) {
     var send = [
       'welcome','nick','join','part','topic', 
       'names','message','notice','away','data', 
-      'quit'
+      'quit','err'
     ];
 
     var recv = [

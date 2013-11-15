@@ -2,3 +2,4 @@
 /public/*     # static files
 ./Readme.md   # a specific file
 *.css         # ignore any CSS files too
+./.git/*

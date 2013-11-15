@@ -337,17 +337,36 @@
   // TODO: recieve mode
   
   Client.prototype.data = function(data, fn){
-    ///^(?:[:@]([^\\s]+) )?([^\\s]+)(?: ((?:[^:\\s][^\\s]* ?)*))?(?: ?:(.*))?$/;
-    //console.log(data.string);
+    console.debug(data.string);
     setTimeout(fn, 1);
   };
   
   Client.prototype.quit = function(data, fn){
-    //console.log(data.message);
+    setTimeout(fn, 1);
+  };
+  
+  Client.prototype.err = function(data, fn){
+    switch (data.command) {
+      case 'ERR_NICKNAMEINUSE':
+        data.from = '*';
+        data.to = this.model.me();
+        return this.notice(data, fn);
+      case 'ERR_NOTREGISTERED':
+        data.from = data.params[0];
+        data.to = this.model.me();
+        return this.notice(data, fn);
+      case 'ERR_UNAVAILRESOURCE':
+        data.from = '*';
+        data.to = this.model.me();
+        return this.notice(data, fn);
+      default:
+        console.error(data.message);
+    }
     setTimeout(fn, 1);
   };
   
   Client.prototype.close = function(data, fn){
+    this.model.channel(undefined);
     this.model.channels([]);
     this.model.viewState('closed');
     setTimeout(fn, 1);

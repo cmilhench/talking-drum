@@ -96,7 +96,7 @@ var socket = irc.on('connect', function () {
   var recv = [
     'welcome','nick','join','part','topic', 
     'names','message','notice','away','data', 
-    'quit', 
+    'quit', 'err',
     'close'
   ];
 
@@ -109,6 +109,8 @@ var socket = irc.on('connect', function () {
     unsubscribe(recv, send);
     socket.removeAllListeners('disconnect');
     client.model.viewState('disconnected');
+    client.model.channel(undefined);
+    client.model.channels([]);
   });
 
 });
