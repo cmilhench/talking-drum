@@ -56,8 +56,8 @@
     this.server = { host: 'irc.freenode.org', port: 6667 };
     this.viewStates = ['disconnected','closed', 'opening', 'opened'];
     this.viewState = ko.observable('disconnected');
-    this.me = ko.observable('td-debug');
-    this.join = ko.observable('#td-debug');
+    this.me = ko.observable('');
+    this.join = ko.observable('');
     this.channels = ko.observableArray([]);
     this.channel = ko.observable();
     self.totalUnseen = ko.computed(function() {

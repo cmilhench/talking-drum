@@ -341,7 +341,10 @@
   // TODO: recieve mode
   
   Client.prototype.data = function(data, fn){
-    console.debug(data.string);
+    var nolog = ['PRIVMSG','NOTICE','TOPIC'];
+    if (nolog.indexOf(data.command) === -1) {
+      console.debug(data.string);
+    }
     setTimeout(fn, 1);
   };
   
