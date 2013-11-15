@@ -48,7 +48,7 @@
             <span title="%topic" data-bind="text: topic, attr: { title: topic }">%topic</span>
           </div>
           <ol class="panel-body list-group" data-bind="foreach: messages, contract: messages, scrollBottom: messages">
-            <li data-bind="template: { afterRender: function(){ $data.seen(true) } }">
+            <li data-bind="template: { afterRender: rendered }">
               <blockquote>
                 <header>
                   <cite class="author" data-bind="text: from">%from</cite>&nbsp;

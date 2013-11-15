@@ -26,6 +26,15 @@
       return self.date().substr(11,5);
     });
     self.seen = ko.observable(false);
+    self.rendered = function(){
+      var element = arguments[0][1];
+      var context = ko.contextFor(element);
+      self.seen(true);
+      var prev = context.$parent.messages()[context.$index()-1];
+      if (prev && prev.from() === self.from() && prev.time() === self.time()) {
+        element.parentNode.classList.add('followon');
+      }
+    };
   }
 
   function ChannelViewModel(name, topic, names) {
