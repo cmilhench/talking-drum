@@ -206,7 +206,10 @@
     this.model = model;
     this.parser = new Parser();
     this.parser.on('message', this.emit.bind(this, 'data'));
-    if (model) this.model.on('message', this.parser.line.bind(this.parser));
+    if (model) {
+      this.model.on('message', this.parser.line.bind(this.parser));
+      this.model.on('open', this.open.bind(this));
+    }
     this.use(plugins.oper);
     this.use(plugins.nick);
     this.use(plugins.quit);
@@ -390,7 +393,27 @@
     setTimeout(fn, 1);
   };
   
+  Client.prototype.open = function(){
+    var self = this;
+    window.onbeforeunload = function() { 
+      return 'Looks like your currently connected'; 
+    };
+    self.emit('open', self.model.server, function(){
+      self.model.viewState('opening');
+      self.emit('nick', self.model.me(), function(){
+        self.emit('user', self.model.me(), self.model.me(), function(){
+          if (self.model.join()) {
+            self.emit('join', self.model.join(), function(){
+              // sent everything and asked to join channels
+            });
+          }
+        });
+      });  
+    });  
+  };
+  
   Client.prototype.close = function(data, fn){
+    window.onbeforeunload = null;
     this.model.channel(undefined);
     this.model.channels([]);
     this.model.viewState('closed');

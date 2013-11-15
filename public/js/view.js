@@ -158,23 +158,8 @@
   };
   
   MainViewModel.prototype.connect = function(){
-    var self = this;
-    if (!self.me()) { return; }
-    window.socket.emit('open', self.server, function(){
-      window.socket.emit('nick', self.me(), function(){
-        window.socket.emit('user', self.me(), self.me(), function(){
-          self.viewState('opening');
-          var join = self.join();
-          if (!join) { return; }
-          join = join.split(','); 
-          join.forEach(function(channel){
-            window.socket.emit('join', channel, function(){
-              // sent everything and asked to join a channel
-            });
-          });
-        });
-      });  
-    });
+    if (!this.me()) { return; }
+    this.emit('open');
   };
   
   return MainViewModel;
