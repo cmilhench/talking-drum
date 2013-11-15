@@ -351,7 +351,7 @@
   Client.prototype.data = function(data, fn){
     var nolog = [
       'NICK','PRIVMSG','NOTICE',
-      /*'TOPIC','RPL_TOPIC',*/
+      'TOPIC','RPL_TOPIC',
       'RPL_NAMREPLY','RPL_ENDOFNAMES',
       'JOIN','PART','QUIT'
     ];
