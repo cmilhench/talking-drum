@@ -157,6 +157,7 @@
   
   MainViewModel.prototype.connect = function(){
     var self = this;
+    if (!self.me()) { return; }
     window.socket.emit('open', self.server, function(){
       window.socket.emit('nick', self.me(), function(){
         window.socket.emit('user', self.me(), self.me(), function(){
