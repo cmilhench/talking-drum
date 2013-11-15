@@ -163,7 +163,8 @@
         window.socket.emit('user', self.me(), self.me(), function(){
           self.viewState('opening');
           var join = self.join();
-          join = Array.isArray(join) ? join : join.split(','); 
+          if (!join) { return; }
+          join = join.split(','); 
           join.forEach(function(channel){
             window.socket.emit('join', channel, function(){
               // sent everything and asked to join a channel

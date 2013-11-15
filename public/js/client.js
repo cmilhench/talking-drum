@@ -354,20 +354,15 @@
   
   Client.prototype.err = function(data, fn){
     switch (data.command) {
+      case 'ERR_ERRONEUSNICKNAME':
       case 'ERR_NICKNAMEINUSE':
+      case 'ERR_UNAVAILRESOURCE':
+      case 'ERR_UNKNOWNCOMMAND':
         data.from = '*';
         data.to = this.model.me();
         return this.notice(data, fn);
       case 'ERR_NOTREGISTERED':
         data.from = data.params[0];
-        data.to = this.model.me();
-        return this.notice(data, fn);
-      case 'ERR_UNAVAILRESOURCE':
-        data.from = '*';
-        data.to = this.model.me();
-        return this.notice(data, fn);
-      case 'ERR_UNKNOWNCOMMAND':
-        data.from = '*';
         data.to = this.model.me();
         return this.notice(data, fn);
       default:
