@@ -238,8 +238,6 @@
 //     EventEmitter.prototype.emit.apply(this, arguments);
 //   };
   
-  // TODO: Handle identify
-  
   Client.prototype.welcome = function(data, fn){
     this.model.me(data);
     setTimeout(fn, 1);
@@ -249,9 +247,13 @@
     if (data.nick === this.model.me()) {
       this.model.me(data.new);
     }
+    for (var i = this.model.channels().length - 1; i >= 0; i--) {
+      var channel = this.model.channels()[i];
+      channel.names.remove(data.nick);
+      channel.names.push(data.new);
+    }
     setTimeout(fn, 1);
   };
-  // TODO: recieve quit
   
   Client.prototype.join = function(data, fn){
     var channel;
@@ -265,7 +267,8 @@
         this.model.addChannel(data.channel);
       }
     } else {
-      // TODO: update channel names
+      channel = this.model.getChannel(data.channel);
+      channel.names.push(data.nick);
     }
     setTimeout(fn, 1);
   };
@@ -280,7 +283,8 @@
         this.model.remChannel(data.channel);
       }
     } else {
-      // TODO: update channel names
+      channel = this.model.getChannel(data.channel);
+      channel.names.remove(data.nick);
     }
     setTimeout(fn, 1);
   };
@@ -294,7 +298,8 @@
   };
   
   Client.prototype.names = function(data, fn){
-    // TODO: update channel names
+    var channel = this.model.getChannel(data.channel);
+    channel.names(data.names);
     setTimeout(fn, 1);
   };
   
@@ -305,8 +310,8 @@
   Client.prototype.notice = 
   Client.prototype.message = function(data, fn){
     data.when = (+new Date());
-    // if this is a direct message create a channel between `me` and the *sender*
-    // so that it to appear in the correct place in the ui
+    // if this is a direct message create a channel between `me` and the
+    // *sender* so that it to appear in the correct place in the ui
     if (data.to.toLowerCase() === this.model.me().toLowerCase()){
       data.to = data.from;
     }
@@ -341,7 +346,12 @@
   // TODO: recieve mode
   
   Client.prototype.data = function(data, fn){
-    var nolog = ['PRIVMSG','NOTICE','TOPIC'];
+    var nolog = [
+      'NICK','PRIVMSG','NOTICE',
+      /*'TOPIC','RPL_TOPIC',*/
+      'RPL_NAMREPLY','RPL_ENDOFNAMES',
+      'JOIN','PART','QUIT'
+    ];
     if (nolog.indexOf(data.command) === -1) {
       console.debug(data.string);
     }
@@ -349,6 +359,12 @@
   };
   
   Client.prototype.quit = function(data, fn){
+    if (data.nick !== this.model.me()) {
+      for (var i = this.model.channels().length - 1; i >= 0; i--) {
+        var channel = this.model.channels()[i];
+        channel.names.remove(data.nick);
+      }
+    }
     setTimeout(fn, 1);
   };
   
