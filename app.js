@@ -36,8 +36,6 @@ io.of('/irc').on('connection', function (socket) {
     var stream = net.connect(server);
     var client = irc(stream);
     
-    client.use(require('./lib/plugins/away')());
-    client.use(require('./lib/plugins/notice')());
     //whois, whowas with callback
     //list,motd,version,stats,links,time with callback
     
