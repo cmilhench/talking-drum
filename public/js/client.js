@@ -33,7 +33,7 @@
         var e = {};
         e.name = msg.params[0];
         e.pass = msg.params[1];
-        client.emit('nick', e.name, e.pass);
+        client.emit('oper', e.name, e.pass);
       });
     },
     nick: function(client){
@@ -288,7 +288,7 @@
       if (data.channel && this.model.getChannel(data.channel)) {
         this.model.remChannel(data.channel);
       }
-    } else {
+    } else if (data.channel) {
       channel = this.model.getChannel(data.channel);
       channel.names.remove(data.nick);
     }
@@ -358,7 +358,7 @@
       'RPL_NAMREPLY','RPL_ENDOFNAMES',
       'JOIN','PART','QUIT'
     ];
-    if (nolog.indexOf(data.command) === -1) {
+    if (true || nolog.indexOf(data.command) === -1) {
       console.debug(data.string);
     }
     setTimeout(fn, 1);
